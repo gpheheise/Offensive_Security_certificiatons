@@ -250,6 +250,9 @@ const CERTS = [
   {code:"GX-PT", full:"GIAC Experienced Penetration Tester", prov:"GIAC / SANS", col:"general", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/"},
   {code:"eCPTX", full:"Certified Penetration Tester eXtreme", prov:"INE Security", col:"general", lvl:3, price:"~$ (sub)", req:true, url:"https://ine.com/security"},
   {code:"CPENT", full:"Certified Penetration Testing Professional → LPT", prov:"EC-Council", col:"general", lvl:3, price:"~$1,899", req:true, url:"https://www.eccouncil.org/train-certify/certified-penetration-testing-professional-cpent/"},
+  {code:"CRTA", full:"Certified Red Team Analyst", prov:"CyberWarFare Labs", col:"general", lvl:1, price:"~$ varies", req:true, url:"https://cyberwarfare.live/product/red-team-analyst-crta/"},
+  {code:"CREST CPSA", full:"CREST Practitioner Security Analyst", prov:"CREST", col:"general", lvl:1, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
+  {code:"CREST CRT", full:"CREST Registered Penetration Tester", prov:"CREST", col:"general", lvl:2, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
 
   /* ---------------- INFRASTRUCTURE & ACTIVE DIRECTORY ---------------- */
   {code:"OSWP", full:"OffSec Wireless Professional (PEN-210)", prov:"OffSec", col:"infra", lvl:1, price:"~ (sub)", req:true, url:"https://www.offsec.com/courses/pen-210/"},
@@ -261,6 +264,8 @@ const CERTS = [
   {code:"CESP-ADCS", full:"Certified Enterprise Security Professional — AD CS", prov:"Altered Security", col:"infra", lvl:3, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/certifications"},
   {code:"HTB CWPE", full:"Certified Wi-Fi Pentesting Expert", prov:"Hack The Box", col:"infra", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/"},
   {code:"CRTM", full:"Certified Red Team Master (formerly PACES)", prov:"Altered Security", col:"infra", lvl:4, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/gcb"},
+  {code:"CREST CCT INF", full:"CREST Certified Tester — Infrastructure", prov:"CREST", col:"infra", lvl:4, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
+  {code:"LHE", full:"Linux Hacking Expert", prov:"HackTricks Training", col:"infra", lvl:3, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/"},
 
   /* ---------------- RED TEAMING & EVASION ---------------- */
   {code:"CRTO", full:"Certified Red Team Operator", prov:"Zero-Point Security", col:"redteam", lvl:2, price:"~$465", req:true, url:"https://training.zeropointsecurity.co.uk/courses/red-team-ops"},
@@ -268,10 +273,15 @@ const CERTS = [
   {code:"GRTP", full:"GIAC Red Team Professional (SEC565)", prov:"GIAC / SANS", col:"redteam", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/red-team-professional-grtp/"},
   {code:"CARTP", full:"Certified Az Red Team Professional", prov:"Altered Security", col:"redteam", lvl:3, price:"~$549", req:true, url:"https://www.alteredsecurity.com/cartp"},
   {code:"CRTL", full:"Certified Red Team Lead (Red Team Ops II)", prov:"Zero-Point Security", col:"redteam", lvl:4, price:"~$ varies", req:true, url:"https://www.zeropointsecurity.co.uk/"},
-  {code:"WKL OffDev", full:"Offensive Development / Malware Dev cert", prov:"White Knight Labs", col:"redteam", lvl:4, price:"~$ varies", req:true, url:"https://whiteknightlabs.com/"},
+  {code:"WKL OffDev", full:"Offensive Development / Malware Dev course", prov:"White Knight Labs", col:"redteam", lvl:4, price:"~$ varies", req:true, url:"https://whiteknightlabs.com/"},
+  {code:"Sektor7 RTO", full:"RED TEAM Operator: Malware Development (course)", prov:"Sektor7 Institute", col:"redteam", lvl:3, price:"~$ varies", req:true, url:"https://institute.sektor7.net/"},
+  {code:"Maldev Academy", full:"Malware Development (course + certificate)", prov:"Maldev Academy", col:"redteam", lvl:3, price:"~$ varies", req:true, url:"https://maldevacademy.com/"},
+  {code:"CREST CCSAS", full:"CREST Certified Simulated Attack Specialist (STAR / TIBER)", prov:"CREST", col:"redteam", lvl:3, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
+  {code:"CREST CCSAM", full:"CREST Certified Simulated Attack Manager (STAR / TIBER)", prov:"CREST", col:"redteam", lvl:4, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
 
   /* ---------------- EXPLOIT DEV & REVERSING ---------------- */
   {code:"OSED", full:"OffSec Exploit Developer (EXP-301)", prov:"OffSec", col:"exploit", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/exp-301/"},
+  {code:"GPYC", full:"GIAC Python Coder (offensive tooling)", prov:"GIAC / SANS", col:"exploit", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/python-coder-gpyc/"},
   {code:"GXPN", full:"GIAC Exploit Researcher & Adv. Pentester (SEC660)", prov:"GIAC / SANS", col:"exploit", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/exploit-researcher-advanced-penetration-tester-gxpn/"},
   {code:"OSMR", full:"OffSec macOS Researcher (EXP-312)", prov:"OffSec", col:"exploit", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/exp-312/"},
   {code:"GREM", full:"GIAC Reverse Engineering Malware (FOR610)", prov:"GIAC / SANS", col:"exploit", lvl:4, price:"~$999", req:false, url:"https://www.giac.org/certifications/reverse-engineering-malware-grem/"},
@@ -297,16 +307,31 @@ const CERTS = [
   {code:"HTB CWEE", full:"Certified Web Exploitation Expert", prov:"Hack The Box", col:"web", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-web-exploitation-expert"},
   {code:"CAPenX", full:"Certified AppSec Pentester eXpert", prov:"The SecOps Group", col:"web", lvl:3, price:"~$ varies", req:false, url:"https://secops.group/"},
   {code:"PWPP", full:"Practical Web Pentest Professional", prov:"TCM Security", col:"web", lvl:3, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"CREST CCT APP", full:"CREST Certified Tester — Application (web)", prov:"CREST", col:"web", lvl:3, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
+  {code:"8kSec OMRE", full:"Offensive Mobile Reversing & Exploitation", prov:"8kSec", col:"web", lvl:3, price:"~$ varies", req:true, url:"https://academy.8ksec.io/"},
 
   /* ---------------- CLOUD ---------------- */
   {code:"ICCA", full:"INE Certified Cloud Associate", prov:"INE Security", col:"cloud", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/"},
-  {code:"CCSP-AWS", full:"Certified Cloud Security Practitioner — AWS", prov:"The SecOps Group", col:"cloud", lvl:2, price:"~$ varies", req:false, url:"https://secops.group/"},
-  {code:"PCRP", full:"Practical Cloud Red Teamer", prov:"TCM Security", col:"cloud", lvl:2, price:"~$ varies", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"CCSP-AWS", full:"Certified Cloud Security Practitioner — AWS", prov:"The SecOps Group", col:"cloud", lvl:1, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"MCRTA", full:"Multi-Cloud Red Team Analyst (AWS+Az+GCP)", prov:"CyberWarFare Labs", col:"cloud", lvl:1, price:"~$49", req:true, url:"https://cyberwarfare.live/product/multi-cloud-red-team-analyst-mcrta/"},
+  {code:"ARTA", full:"AWS Red Team Apprentice", prov:"HackTricks Training", col:"cloud", lvl:1, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/arta/"},
+  {code:"AzRTA", full:"Azure Red Team Apprentice", prov:"HackTricks Training", col:"cloud", lvl:1, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/"},
+  {code:"GRTA", full:"GCP Red Team Apprentice", prov:"HackTricks Training", col:"cloud", lvl:1, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/"},
+  {code:"MCRTP", full:"Microsoft Cloud Red Team Professional (Azure/M365)", prov:"Pwned Labs", col:"cloud", lvl:2, price:"~$ bootcamp", req:true, url:"https://bootcamps.pwnedlabs.io/mcrtp-bootcamp"},
+  {code:"ACRTP", full:"Amazon (AWS) Cloud Red Team Professional", prov:"Pwned Labs", col:"cloud", lvl:2, price:"~$ bootcamp", req:true, url:"https://bootcamps.pwnedlabs.io/placrtp-bootcamp"},
+  {code:"GCRTP", full:"Google Cloud Red Team Professional (GCP/Workspace)", prov:"Pwned Labs", col:"cloud", lvl:2, price:"~$ bootcamp", req:true, url:"https://bootcamps.pwnedlabs.io/gcrtp-bootcamp"},
   {code:"CARTP*", full:"Certified Az Red Team Professional (hybrid AD)", prov:"Altered Security", col:"cloud", lvl:2, price:"~$549", req:true, url:"https://www.alteredsecurity.com/cartp"},
+  {code:"PCRP", full:"Practical Cloud Red Teamer", prov:"TCM Security", col:"cloud", lvl:2, price:"~$ varies", req:false, url:"https://certifications.tcm-sec.com/"},
   {code:"GCPN", full:"GIAC Cloud Penetration Tester (SEC588)", prov:"GIAC / SANS", col:"cloud", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/cloud-penetration-tester-gcpn/"},
+  {code:"ARTE", full:"AWS Red Team Expert", prov:"HackTricks Training", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/arte/"},
+  {code:"AzRTE", full:"Azure Red Team Expert", prov:"HackTricks Training", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/"},
+  {code:"GRTE", full:"GCP Red Team Expert", prov:"HackTricks Training", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://hacktricks-training.com/courses/"},
   {code:"CARTE", full:"Certified Az Red Team Expert", prov:"Altered Security", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/certifications"},
   {code:"CCPenX-AWS", full:"Certified Cloud Pentesting eXpert — AWS", prov:"The SecOps Group", col:"cloud", lvl:3, price:"~$ varies", req:false, url:"https://secops.group/"},
-  {code:"CMCRT", full:"Multi-Cloud Red Team Analyst", prov:"CyberWarFare Labs", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://cyberwarfare.live/"},
+  {code:"CHMRTS", full:"Hybrid Multi-Cloud Red Team Specialist", prov:"CyberWarFare Labs", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://cyberwarfare.live/product/hybrid-multi-cloud-red-team-specialist-chmrts/"},
+  {code:"MCRTE", full:"Microsoft Cloud Red Team Expert (Expert Edition)", prov:"Pwned Labs", col:"cloud", lvl:4, price:"~$ bootcamp", req:true, url:"https://pwnedlabs.io/bootcamps"},
+  {code:"M-CRTP3", full:"Multi-Cloud Red Team Pro (ACRTP+MCRTP+GCRTP)", prov:"Pwned Labs", col:"cloud", lvl:4, price:"capstone", req:true, url:"https://bootcamps.pwnedlabs.io/m-crtp3-certification"},
+  {code:"Cloud RTE", full:"Cloud Red Team Expert (ARTE+AzRTE+GRTE)", prov:"HackTricks Training", col:"cloud", lvl:4, price:"capstone", req:true, url:"https://hacktricks-training.com/courses/"},
 
   /* ---------------- AI / ML OFFENSIVE ---------------- */
   {code:"Offensive AI", full:"Generative AI for Pentesters (eJPT path module)", prov:"INE Security", col:"ai", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
@@ -334,7 +359,7 @@ const CERTS = [
 
 /* ---- version stamp ---- */
 const today=new Date();
-const verStr="OffSec Roadmap v1.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" entries";
+const verStr="OffSec Roadmap v1.1 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" entries";
 document.getElementById('footver').textContent=verStr;
 
 /* ---- build provider filter ---- */
@@ -420,7 +445,11 @@ document.getElementById('notes').innerHTML=
   'Columns are domains; rows are proficiency (Foundational → Expert). Some certs span domains — e.g. '+
   '<b>CARTP</b> appears under Cloud and is also a hybrid-AD red-team cert; <b>OSEP</b> doubles as advanced infra. '+
   '<b>SAP offensive note:</b> there is no flagship vendor-neutral offensive SAP certification — the field is covered by '+
-  'specialist training (RedRays, Onapsis, conference workshops), so those are listed as trainings rather than exams.';
+  'specialist training (RedRays, Onapsis, conference workshops), so those are listed as trainings rather than exams. '+
+  '<b>CREST / TIBER:</b> the CREST ladder (CPSA → CRT → CCT-INF/APP → CCSAS → CCSAM) is the EU/UK consultancy standard; '+
+  'CCSAS / CCSAM are the STAR qualifications behind TIBER-EU and CBEST threat-led pentesting. '+
+  '<b>Cloud red team</b> is the fastest-moving area — Pwned Labs (MCRTP/ACRTP/GCRTP → M-CRTP3), HackTricks Training '+
+  '(ARTE/AzRTE/GRTE → Cloud RTE) and CyberWarFare Labs (MCRTA/CHMRTS) are all hands-on, identity-driven, and current.';
 
 render();
 </script>
