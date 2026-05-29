@@ -141,6 +141,47 @@
 
   .dim{opacity:.16;filter:grayscale(.6)}
 
+  /* ---------- Pro Labs & Cyber Ranges ---------- */
+  :root{ --htb:#9fef00; --htb-dk:#6fae00; --hs:#ff7a59; --hs-dk:#c9543a; }
+  .ranges{padding:26px 22px 6px;border-top:1px solid var(--line);margin-top:22px;
+    background:radial-gradient(900px 220px at 50% -30%, rgba(159,239,0,.05), transparent 65%);}
+  .ranges h2{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:-.4px;
+    font-size:clamp(17px,2.6vw,26px);margin:0}
+  .ranges h2 .acc{color:var(--htb)}
+  .ranges .intro{margin:9px 0 4px;color:var(--ink-dim);max-width:80ch;font-size:13px;line-height:1.55}
+  .ranges .intro b{color:var(--ink)}
+  .rlegend{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 4px;font-size:12px;color:var(--ink-dim)}
+  .rlegend .grp{display:flex;align-items:center;gap:7px}
+  .rlegend .sw{width:13px;height:13px;border-radius:3px}
+  .tiers{display:flex;flex-direction:column;gap:10px;padding:14px 0 4px}
+  .tierrow{display:grid;grid-template-columns:108px 1fr;gap:12px;align-items:stretch}
+  .tier-label{font-family:"Archivo",sans-serif;font-weight:700;font-size:11px;letter-spacing:1.2px;
+    text-transform:uppercase;color:var(--ink);display:flex;align-items:center;justify-content:flex-end;
+    text-align:right;padding-right:12px;border-right:2px solid var(--line)}
+  .tier-label small{display:block;color:var(--ink-dim);font-weight:400;letter-spacing:0;
+    font-family:"IBM Plex Sans";text-transform:none;font-size:10px;margin-top:2px}
+  .labcards{display:flex;gap:10px;flex-wrap:wrap}
+  .labcard{position:relative;flex:1 1 220px;max-width:340px;min-width:200px;
+    background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--cardc,var(--htb));
+    border-radius:8px;padding:11px 12px;cursor:pointer;text-decoration:none;color:var(--ink);
+    transition:transform .08s ease,box-shadow .12s ease,border-color .12s}
+  .labcard:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.45)}
+  .labcard:focus-visible{outline:2px solid var(--cardc,var(--htb));outline-offset:2px}
+  .labcard .lc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .labcard .lc-name{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px}
+  .labcard .lc-prov{font-size:9px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;
+    padding:2px 7px;border-radius:20px;color:#0e1116;background:var(--cardc,var(--htb))}
+  .labcard .lc-focus{font-size:11.5px;color:var(--ink);margin-top:7px;line-height:1.35}
+  .labcard .lc-for{font-size:11px;color:var(--ink-dim);margin-top:6px;line-height:1.35}
+  .labcard .lc-for b{color:var(--cardc,var(--htb));font-weight:600}
+  .labcard .lc-go{font-size:10px;color:var(--ink-dim);font-family:"IBM Plex Mono";margin-top:7px}
+  @media (max-width:860px){
+    .tierrow{grid-template-columns:1fr;gap:6px}
+    .tier-label{justify-content:flex-start;text-align:left;border-right:none;
+      border-left:3px solid var(--line);padding:2px 0 2px 10px}
+    .labcard{flex:1 1 100%;max-width:none}
+  }
+
   /* note strip */
   .notes{padding:8px 22px 4px;color:var(--ink-dim);font-size:12px;line-height:1.5}
   .notes b{color:var(--ink)}
@@ -199,6 +240,24 @@
 <div class="scrollwrap">
   <div class="chart" id="chart"></div>
 </div>
+
+<section class="ranges">
+  <h2>Pro Labs &amp; <span class="acc">Cyber Ranges</span></h2>
+  <p class="intro">
+    The map above is exams. <b>This map is ranges.</b> Pro Labs and cyber ranges are large, multi-host simulated
+    enterprise networks you attack end-to-end — getting a foothold, pivoting, escalating, and reaching domain/cloud
+    dominance. They are <b>not proctored certifications</b>: instead of an exam, finishing one earns a
+    <b>certificate-style completion acknowledgement / badge</b>. That makes them ideal for <b>building and proving
+    hands-on skill</b> — preparing for OSCP / CRTO / CPTS, rehearsing real red-team and AD tradecraft, or showing a
+    hiring manager you can clear a realistic environment. Difficulty rises left-to-right; pick a lab that matches where
+    you are, not where you want the badge to look.
+  </p>
+  <div class="rlegend">
+    <span class="grp"><span class="sw" style="background:var(--htb)"></span>Hack The Box — Pro Labs (subscription / Cubes; completion certificate)</span>
+    <span class="grp"><span class="sw" style="background:var(--hs)"></span>HackSmarter — affordable labs &amp; paths (some issue named certs)</span>
+  </div>
+  <div class="tiers" id="tiers"></div>
+</section>
 
 <div class="notes" id="notes"></div>
 
@@ -452,6 +511,57 @@ document.getElementById('notes').innerHTML=
   '(ARTE/AzRTE/GRTE → Cloud RTE) and CyberWarFare Labs (MCRTA/CHMRTS) are all hands-on, identity-driven, and current.';
 
 render();
+
+/* =========================================================================
+   PRO LABS & CYBER RANGES.  Edit here.
+   prov : "HTB" | "HS"   tier: 1 Entry | 2 Intermediate | 3 Advanced | 4 Expert
+   ========================================================================= */
+const LAB_TIERS=[
+  {n:1,label:"Entry",     sub:"foundations / OSCP-prep"},
+  {n:2,label:"Intermediate",sub:"enterprise & AD"},
+  {n:3,label:"Advanced",  sub:"hardened / real-world"},
+  {n:4,label:"Expert",    sub:"elite red team"}
+];
+const LABS=[
+  /* HTB Pro Labs */
+  {name:"Dante", prov:"HTB", tier:1, focus:"General pentest methodology, pivoting across Linux & Windows hosts.", who:"OSCP-prep & junior pentesters building a repeatable methodology.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Zephyr", prov:"HTB", tier:2, focus:"Active Directory enumeration & exploitation; corporate foothold to escalation.", who:"Pentesters moving into AD / enterprise engagements.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"RastaLabs", prov:"HTB", tier:2, focus:"Red-team simulation: AD + simulated users, AV/Defender evasion, C2 ops.", who:"Aspiring red teamers learning evasion and command & control.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Offshore", prov:"HTB", tier:3, focus:"Real-world enterprise AD with a wide range of modern misconfigurations & lateral movement.", who:"Experienced pentesters drilling deep AD attack chains.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Cybernetics", prov:"HTB", tier:3, focus:"Hardened, fully-patched Windows AD — reach Domain Admin against active defenses.", who:"Seasoned pentesters & red teamers wanting a brutal AD challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"APTLabs", prov:"HTB", tier:4, focus:"Targeted external attack against a Managed Service Provider (MSP); HTB's hardest pro lab.", who:"Elite red teamers proving end-to-end operator capability.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  /* HackSmarter labs & paths */
+  {name:"HS · OSCP Prep", prov:"HS", tier:1, focus:"Curated OSCP-style box path with walkthroughs and community support.", who:"OSCP candidates who want affordable, structured practice.", url:"https://paths.hacksmarter.org/"},
+  {name:"HS · Active Directory", prov:"HS", tier:2, focus:"Hands-on AD attack-path labs (Kerberos, delegation, lateral movement).", who:"Anyone building AD tradecraft on a budget.", url:"https://www.hacksmarter.org/"},
+  {name:"HS · Web App Pentesting", prov:"HS", tier:2, focus:"Web application pentesting course + labs with a named completion certification.", who:"Web / AppSec learners wanting a cert-backed path.", url:"https://www.hacksmarter.org/"},
+  {name:"HS · AWS Pentesting", prov:"HS", tier:2, focus:"Cloud pentest scenarios with CloudGoat & Pacu — EC2, Lambda credential theft, IAM privesc.", who:"Cloud-curious pentesters starting AWS offense.", url:"https://www.hacksmarter.org/"}
+];
+
+function renderLabs(){
+  const wrap=document.getElementById('tiers');if(!wrap)return;wrap.innerHTML="";
+  LAB_TIERS.forEach(t=>{
+    const row=document.createElement('div');row.className="tierrow";
+    const lab=document.createElement('div');lab.className="tier-label";
+    lab.innerHTML=t.label+"<small>"+t.sub+"</small>";row.appendChild(lab);
+    const cards=document.createElement('div');cards.className="labcards";
+    const items=LABS.filter(l=>l.tier===t.n);
+    items.forEach(l=>{
+      const c=l.prov==="HTB"?"var(--htb)":"var(--hs)";
+      const a=document.createElement('a');a.className="labcard";
+      a.href=l.url;a.target="_blank";a.rel="noopener";a.tabIndex=0;
+      a.style.setProperty('--cardc',c);
+      a.innerHTML=
+        '<div class="lc-top"><span class="lc-name">'+l.name.replace(/^HS · /,'')+'</span>'+
+          '<span class="lc-prov">'+(l.prov==="HTB"?"HTB":"HackSmarter")+'</span></div>'+
+        '<div class="lc-focus">'+l.focus+'</div>'+
+        '<div class="lc-for"><b>Best for:</b> '+l.who+'</div>'+
+        '<div class="lc-go">↗ open lab</div>';
+      cards.appendChild(a);
+    });
+    row.appendChild(cards);wrap.appendChild(row);
+  });
+}
+renderLabs();
 </script>
 </body>
 </html>
