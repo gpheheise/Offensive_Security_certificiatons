@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offensive Security Certification Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1116;
+    --panel:#161b22;
+    --panel-2:#1c232d;
+    --ink:#e6edf3;
+    --ink-dim:#9aa7b4;
+    --line:#2b333d;
+    --accent:#ffad00;
+
+    /* Domain colors: [fill] / [dark border] / [tint] */
+    --general:#3a9b54;     --general-dk:#236b39;
+    --infra:#2f6fb0;       --infra-dk:#1f4a78;
+    --redteam:#c6473a;     --redteam-dk:#8c2a20;
+    --exploit:#7b46b0;     --exploit-dk:#4f2b76;
+    --web:#0e9aa7;         --web-dk:#076b73;
+    --cloud:#e08a1e;       --cloud-dk:#a8640f;
+    --ai:#c0249a;          --ai-dk:#7d1264;
+    --iot:#6b8e23;         --iot-dk:#496016;
+    --sap:#6b7280;         --sap-dk:#454b54;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    padding:26px 22px 18px;border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(900px 240px at 12% -40%, rgba(255,173,0,.10), transparent 60%),
+      radial-gradient(900px 240px at 88% -40%, rgba(198,71,58,.10), transparent 60%),
+      var(--panel);
+  }
+  .hero h1{
+    font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:-.5px;
+    margin:0;font-size:clamp(20px,3.4vw,34px);line-height:1.02;
+  }
+  .hero h1 .acc{color:var(--accent)}
+  .hero p.sub{margin:8px 0 0;color:var(--ink-dim);max-width:78ch;font-size:14px;line-height:1.5}
+  .hero p.sub code{font-family:"IBM Plex Mono",monospace;color:var(--ink);font-size:12.5px}
+
+  /* ---------- Controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .controls input[type=search]{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 12px;border-radius:8px;font-size:13px;min-width:230px;font-family:inherit;
+  }
+  .controls input[type=search]:focus{outline:none;border-color:var(--accent)}
+  .controls select{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 10px;border-radius:8px;font-size:13px;font-family:inherit;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;cursor:pointer;user-select:none;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    padding:8px 11px;border-radius:8px;font-size:12.5px;
+  }
+  .pill input{accent-color:var(--accent);margin:0}
+  .pill.on{color:var(--ink);border-color:var(--accent)}
+  .count{margin-left:auto;color:var(--ink-dim);font-size:12.5px;font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- Legend ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:14px;font-size:12px;color:var(--ink-dim)}
+  .legend .grp{display:flex;align-items:center;gap:7px}
+  .legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(255,255,255,.18)}
+  .legend .lvlkey b{color:var(--ink);font-weight:600}
+
+  /* ---------- Chart ---------- */
+  .scrollwrap{overflow-x:auto;padding:18px 14px 8px}
+  .chart{display:flex;gap:12px;min-width:1180px;align-items:stretch}
+  .axis{
+    flex:0 0 30px;display:flex;flex-direction:column;justify-content:space-between;
+    padding:46px 0 12px;
+  }
+  .axis .lvl{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;
+    color:var(--ink-dim);text-transform:uppercase;text-align:center;flex:1;
+    display:flex;align-items:center;justify-content:center;
+    border-right:2px solid var(--line);margin-right:4px;
+  }
+  .col{flex:1 1 0;min-width:152px;display:flex;flex-direction:column;gap:8px}
+  .col-head{
+    font-family:"Archivo",sans-serif;font-weight:700;font-size:12.5px;line-height:1.15;
+    color:#fff;padding:9px 10px;border-radius:8px 8px 3px 3px;min-height:46px;
+    display:flex;align-items:center;text-align:left;border-bottom:3px solid rgba(0,0,0,.3);
+  }
+  .band{
+    background:var(--panel);border:1px solid var(--line);border-radius:7px;
+    padding:7px;display:flex;flex-direction:column;gap:6px;flex:1;
+    background-image:linear-gradient(var(--bandtint,transparent),var(--bandtint,transparent));
+  }
+  .band.empty{align-items:center;justify-content:center}
+  .band.empty span{color:var(--line);font-size:18px;font-family:"IBM Plex Mono",monospace}
+
+  /* cert box */
+  .cert{
+    position:relative;display:block;border-radius:6px;padding:7px 8px;cursor:pointer;
+    border:1px solid rgba(0,0,0,.35);color:#fff;
+    font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;line-height:1.1;
+    transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .cert .pv{display:block;font-family:"IBM Plex Sans",sans-serif;font-weight:400;
+    font-size:9.5px;opacity:.82;margin-top:3px;letter-spacing:.2px}
+  .cert:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.45);filter:brightness(1.08);z-index:5}
+  .cert:focus-visible{outline:2px solid #fff;outline-offset:1px}
+  .cert .req{position:absolute;top:5px;right:6px;font-size:8px;opacity:.85}
+
+  /* tooltip */
+  .cert .tip{
+    position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) scale(.97);
+    width:230px;background:#0b0e13;border:1px solid var(--tipline,#444);border-radius:8px;
+    padding:10px 11px;color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-weight:400;
+    box-shadow:0 14px 34px rgba(0,0,0,.6);opacity:0;pointer-events:none;
+    transition:opacity .12s ease, transform .12s ease;z-index:50;text-align:left;
+  }
+  .cert:hover .tip,.cert:focus-visible .tip{opacity:1;transform:translateX(-50%) scale(1)}
+  .tip .t-name{font-weight:600;font-size:12.5px;line-height:1.25;margin-bottom:2px;color:#fff}
+  .tip .t-full{font-size:11px;color:var(--ink-dim);line-height:1.3;margin-bottom:7px}
+  .tip .t-row{display:flex;justify-content:space-between;font-size:11px;margin-top:3px}
+  .tip .t-row .k{color:var(--ink-dim)}
+  .tip .t-row .v{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
+  .tip .t-tag{display:inline-block;margin-top:8px;font-size:9.5px;letter-spacing:.4px;
+    text-transform:uppercase;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.08);color:var(--ink-dim)}
+  .tip .t-go{display:block;margin-top:8px;font-size:10.5px;color:var(--accent);font-family:"IBM Plex Mono",monospace}
+  .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:6px solid transparent;border-top-color:#0b0e13}
+  /* flip tooltip down for top band rows */
+  .cert.tipdown .tip{bottom:auto;top:calc(100% + 8px)}
+  .cert.tipdown .tip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#0b0e13}
+
+  .dim{opacity:.16;filter:grayscale(.6)}
+
+  /* note strip */
+  .notes{padding:8px 22px 4px;color:var(--ink-dim);font-size:12px;line-height:1.5}
+  .notes b{color:var(--ink)}
+
+  footer{padding:18px 22px 34px;border-top:1px solid var(--line);margin-top:14px;
+    color:var(--ink-dim);font-size:12px;line-height:1.6}
+  footer .ver{font-family:"IBM Plex Mono",monospace;color:var(--ink)}
+  footer a.link{color:var(--accent)}
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:860px){
+    .scrollwrap{overflow-x:visible;padding:14px 12px}
+    .chart{flex-direction:column;min-width:0;gap:18px}
+    .axis{display:none}
+    .col{min-width:0}
+    .band{flex-direction:row;flex-wrap:wrap}
+    .band::before{content:attr(data-lvl);flex-basis:100%;font-family:"Archivo";font-weight:700;
+      font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim);margin-bottom:2px}
+    .band.empty{display:none}
+    .cert{flex:1 1 calc(50% - 3px)}
+    .cert .tip{position:fixed;left:12px;right:12px;bottom:14px;top:auto;width:auto;transform:none}
+    .cert:hover .tip,.cert:focus-visible .tip{transform:none}
+    .cert .tip::after{display:none}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>Offensive Security <span class="acc">Certification Roadmap</span></h1>
+  <p class="sub">A red-team / penetration-testing-only map of current trainings &amp; certifications, organised by
+  domain (columns) and proficiency (rows). Hover a box for the provider, full name, approximate exam cost and whether a
+  course is required. Click to open the official page. Inspired by Paul Jeremy's
+  <code>Security Certification Roadmap</code>, rebuilt offensive-only and data-driven.</p>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search cert, provider, e.g. OSCP, AD, GIAC…" autocomplete="off">
+    <select id="prov"><option value="">All providers</option></select>
+    <label class="pill" id="reqPill"><input type="checkbox" id="reqOnly"> Course required only</label>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="legend">
+    <span class="lvlkey">Levels:&nbsp; <b>Foundational</b> → <b>Intermediate</b> → <b>Advanced</b> → <b>Expert</b></span>
+    <span class="grp"><span class="sw" style="background:var(--general)"></span>Foundational / General</span>
+    <span class="grp"><span class="sw" style="background:var(--infra)"></span>Infra &amp; Active Directory</span>
+    <span class="grp"><span class="sw" style="background:var(--redteam)"></span>Red Team &amp; Evasion</span>
+    <span class="grp"><span class="sw" style="background:var(--exploit)"></span>Exploit Dev &amp; Reversing</span>
+    <span class="grp"><span class="sw" style="background:var(--web)"></span>Web · API · Mobile</span>
+    <span class="grp"><span class="sw" style="background:var(--cloud)"></span>Cloud</span>
+    <span class="grp"><span class="sw" style="background:var(--ai)"></span>AI / ML Offensive</span>
+    <span class="grp"><span class="sw" style="background:var(--iot)"></span>IoT · Hardware · OT/ICS</span>
+    <span class="grp"><span class="sw" style="background:var(--sap)"></span>SAP / ERP</span>
+  </div>
+</header>
+
+<div class="scrollwrap">
+  <div class="chart" id="chart"></div>
+</div>
+
+<div class="notes" id="notes"></div>
+
+<footer>
+  <div class="ver" id="footver"></div>
+  <p>Prices are <b>approximate standalone-exam or course-bundle</b> figures and change frequently — verify on the provider
+  site before purchasing. "Course req." means the certification effectively requires the vendor's own training/lab
+  subscription (you generally cannot challenge the exam independently).</p>
+  <p>Concept &amp; original layout: Paul Jeremy —
+  <a class="link" href="https://pauljerimy.com/security-certification-roadmap/" target="_blank" rel="noopener">pauljerimy.com/security-certification-roadmap</a>.
+  This offensive-only derivative is provided under <b>CC&nbsp;BY-SA&nbsp;4.0</b> in keeping with the original. Maintained by you — edit the
+  <code style="font-family:'IBM Plex Mono'">CERTS</code> array in this file to add, retire or re-price entries.</p>
+</footer>
+
+<script>
+/* =========================================================================
+   EDIT HERE.  One object per certification.
+   col   : general | infra | redteam | exploit | web | cloud | ai | iot | sap
+   lvl   : 1 Foundational | 2 Intermediate | 3 Advanced | 4 Expert
+   req   : true = vendor course/subscription required to sit the exam
+   price : approximate, string (verify before buying)
+   ========================================================================= */
+const COLUMNS = [
+  {id:"general", label:"Foundational & General Pentest"},
+  {id:"infra",   label:"Infrastructure & Active Directory"},
+  {id:"redteam", label:"Red Teaming & Evasion"},
+  {id:"exploit", label:"Exploit Dev & Reversing"},
+  {id:"web",     label:"Web · API · Mobile AppSec"},
+  {id:"cloud",   label:"Cloud Security"},
+  {id:"ai",      label:"AI / ML Offensive"},
+  {id:"iot",     label:"IoT · Hardware · OT/ICS"},
+  {id:"sap",     label:"SAP / ERP"}
+];
+const LEVELS = ["Foundational","Intermediate","Advanced","Expert"];
+
+const CERTS = [
+  /* ---------------- GENERAL / FOUNDATIONAL ---------------- */
+  {code:"eJPT", full:"eLearnSecurity Junior Penetration Tester", prov:"INE Security", col:"general", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/security/certifications/ejpt-certification"},
+  {code:"HTB CJCA", full:"Certified Junior Cybersecurity Associate", prov:"Hack The Box", col:"general", lvl:1, price:"~$90", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-junior-cybersecurity-associate"},
+  {code:"PJPT", full:"Practical Junior Penetration Tester", prov:"TCM Security", col:"general", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/pjpt/"},
+  {code:"PenTest+", full:"CompTIA PenTest+", prov:"CompTIA", col:"general", lvl:1, price:"~$439", req:false, url:"https://www.comptia.org/certifications/pentest"},
+  {code:"CEH", full:"Certified Ethical Hacker", prov:"EC-Council", col:"general", lvl:1, price:"~$1,199", req:true, url:"https://www.eccouncil.org/train-certify/certified-ethical-hacker-ceh/"},
+  {code:"eCPPT", full:"Certified Professional Penetration Tester", prov:"INE Security", col:"general", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security/certifications/ecppt-certification"},
+  {code:"HTB CPTS", full:"Certified Penetration Testing Specialist", prov:"Hack The Box", col:"general", lvl:2, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-penetration-testing-specialist"},
+  {code:"PNPT", full:"Practical Network Penetration Tester", prov:"TCM Security", col:"general", lvl:2, price:"~$499", req:false, url:"https://certifications.tcm-sec.com/pnpt/"},
+  {code:"GPEN", full:"GIAC Penetration Tester (SEC560)", prov:"GIAC / SANS", col:"general", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/penetration-tester-gpen/"},
+  {code:"CEH Practical", full:"Certified Ethical Hacker (Practical / Master)", prov:"EC-Council", col:"general", lvl:2, price:"~$550", req:false, url:"https://www.eccouncil.org/train-certify/ceh-practical/"},
+  {code:"OSCP / OSCP+", full:"OffSec Certified Professional (PEN-200)", prov:"OffSec", col:"general", lvl:3, price:"~$1,749 bundle / $799 exam", req:true, url:"https://www.offsec.com/courses/pen-200/"},
+  {code:"GX-PT", full:"GIAC Experienced Penetration Tester", prov:"GIAC / SANS", col:"general", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/"},
+  {code:"eCPTX", full:"Certified Penetration Tester eXtreme", prov:"INE Security", col:"general", lvl:3, price:"~$ (sub)", req:true, url:"https://ine.com/security"},
+  {code:"CPENT", full:"Certified Penetration Testing Professional → LPT", prov:"EC-Council", col:"general", lvl:3, price:"~$1,899", req:true, url:"https://www.eccouncil.org/train-certify/certified-penetration-testing-professional-cpent/"},
+
+  /* ---------------- INFRASTRUCTURE & ACTIVE DIRECTORY ---------------- */
+  {code:"OSWP", full:"OffSec Wireless Professional (PEN-210)", prov:"OffSec", col:"infra", lvl:1, price:"~ (sub)", req:true, url:"https://www.offsec.com/courses/pen-210/"},
+  {code:"CRTP", full:"Certified Red Team Professional", prov:"Altered Security", col:"infra", lvl:2, price:"~$249", req:true, url:"https://www.alteredsecurity.com/adlab"},
+  {code:"GAWN", full:"GIAC Assessing & Auditing Wireless Networks (SEC617)", prov:"GIAC / SANS", col:"infra", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/assessing-auditing-wireless-networks-gawn/"},
+  {code:"CNPen", full:"Certified Network Penetration Tester", prov:"The SecOps Group", col:"infra", lvl:2, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"CRTE", full:"Certified Red Team Expert", prov:"Altered Security", col:"infra", lvl:3, price:"~$549", req:true, url:"https://www.alteredsecurity.com/adlab"},
+  {code:"HTB CAPE", full:"Certified Active Directory Pentesting Expert", prov:"Hack The Box", col:"infra", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-active-directory-pentesting-expert"},
+  {code:"CESP-ADCS", full:"Certified Enterprise Security Professional — AD CS", prov:"Altered Security", col:"infra", lvl:3, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/certifications"},
+  {code:"HTB CWPE", full:"Certified Wi-Fi Pentesting Expert", prov:"Hack The Box", col:"infra", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/"},
+  {code:"CRTM", full:"Certified Red Team Master (formerly PACES)", prov:"Altered Security", col:"infra", lvl:4, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/gcb"},
+
+  /* ---------------- RED TEAMING & EVASION ---------------- */
+  {code:"CRTO", full:"Certified Red Team Operator", prov:"Zero-Point Security", col:"redteam", lvl:2, price:"~$465", req:true, url:"https://training.zeropointsecurity.co.uk/courses/red-team-ops"},
+  {code:"OSEP", full:"OffSec Experienced Pentester (PEN-300)", prov:"OffSec", col:"redteam", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/pen-300/"},
+  {code:"GRTP", full:"GIAC Red Team Professional (SEC565)", prov:"GIAC / SANS", col:"redteam", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/red-team-professional-grtp/"},
+  {code:"CARTP", full:"Certified Az Red Team Professional", prov:"Altered Security", col:"redteam", lvl:3, price:"~$549", req:true, url:"https://www.alteredsecurity.com/cartp"},
+  {code:"CRTL", full:"Certified Red Team Lead (Red Team Ops II)", prov:"Zero-Point Security", col:"redteam", lvl:4, price:"~$ varies", req:true, url:"https://www.zeropointsecurity.co.uk/"},
+  {code:"WKL OffDev", full:"Offensive Development / Malware Dev cert", prov:"White Knight Labs", col:"redteam", lvl:4, price:"~$ varies", req:true, url:"https://whiteknightlabs.com/"},
+
+  /* ---------------- EXPLOIT DEV & REVERSING ---------------- */
+  {code:"OSED", full:"OffSec Exploit Developer (EXP-301)", prov:"OffSec", col:"exploit", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/exp-301/"},
+  {code:"GXPN", full:"GIAC Exploit Researcher & Adv. Pentester (SEC660)", prov:"GIAC / SANS", col:"exploit", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/exploit-researcher-advanced-penetration-tester-gxpn/"},
+  {code:"OSMR", full:"OffSec macOS Researcher (EXP-312)", prov:"OffSec", col:"exploit", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/exp-312/"},
+  {code:"GREM", full:"GIAC Reverse Engineering Malware (FOR610)", prov:"GIAC / SANS", col:"exploit", lvl:4, price:"~$999", req:false, url:"https://www.giac.org/certifications/reverse-engineering-malware-grem/"},
+  {code:"PMRP", full:"Practical Malware Research Professional", prov:"TCM Security", col:"exploit", lvl:4, price:"~$ varies", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"OSCE³", full:"OffSec Certified Expert 3 (OSEP+OSWE+OSED)", prov:"OffSec", col:"exploit", lvl:4, price:"designation", req:true, url:"https://www.offsec.com/courses/osce3/"},
+  {code:"OSEE", full:"OffSec Exploitation Expert (EXP-401)", prov:"OffSec", col:"exploit", lvl:4, price:"~$5,000+ (in-person)", req:true, url:"https://www.offsec.com/courses/exp-401/"},
+
+  /* ---------------- WEB · API · MOBILE ---------------- */
+  {code:"HTB CWES", full:"Certified Web Exploitation Specialist (ex-CBBH)", prov:"Hack The Box", col:"web", lvl:1, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-bug-bounty-hunter"},
+  {code:"PWPA", full:"Practical Web Pentest Associate", prov:"TCM Security", col:"web", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/pwpa/"},
+  {code:"CAP", full:"Certified AppSec Practitioner", prov:"The SecOps Group", col:"web", lvl:1, price:"~$439", req:false, url:"https://secops.group/product/certified-application-security-practitioner/"},
+  {code:"PMPA", full:"Practical Mobile Pentest Associate", prov:"TCM Security", col:"web", lvl:1, price:"~$249", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"BSCP", full:"Burp Suite Certified Practitioner", prov:"PortSwigger", col:"web", lvl:2, price:"~$99 (free course)", req:false, url:"https://portswigger.net/web-security/certification"},
+  {code:"eWPT", full:"Web Application Penetration Tester", prov:"INE Security", col:"web", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
+  {code:"OSWA", full:"OffSec Web Assessor (WEB-200)", prov:"OffSec", col:"web", lvl:2, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/web-200/"},
+  {code:"GWAPT", full:"GIAC Web App Penetration Tester (SEC542)", prov:"GIAC / SANS", col:"web", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/web-application-penetration-tester-gwapt/"},
+  {code:"CAPen", full:"Certified AppSec Pentester", prov:"The SecOps Group", col:"web", lvl:2, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"GMOB", full:"GIAC Mobile Device Security Analyst (SEC575)", prov:"GIAC / SANS", col:"web", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/mobile-device-security-analyst-gmob/"},
+  {code:"eMAPT", full:"Mobile Application Penetration Tester", prov:"INE Security", col:"web", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
+  {code:"CMPen-And/iOS", full:"Certified Mobile Pentester (Android / iOS)", prov:"The SecOps Group", col:"web", lvl:2, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"eWPTX", full:"Web Application Penetration Tester eXtreme", prov:"INE Security", col:"web", lvl:3, price:"~$249 (sub)", req:true, url:"https://ine.com/security/certifications/ewptx-certification"},
+  {code:"OSWE", full:"OffSec Web Expert (WEB-300)", prov:"OffSec", col:"web", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/web-300/"},
+  {code:"HTB CWEE", full:"Certified Web Exploitation Expert", prov:"Hack The Box", col:"web", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-web-exploitation-expert"},
+  {code:"CAPenX", full:"Certified AppSec Pentester eXpert", prov:"The SecOps Group", col:"web", lvl:3, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"PWPP", full:"Practical Web Pentest Professional", prov:"TCM Security", col:"web", lvl:3, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/"},
+
+  /* ---------------- CLOUD ---------------- */
+  {code:"ICCA", full:"INE Certified Cloud Associate", prov:"INE Security", col:"cloud", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/"},
+  {code:"CCSP-AWS", full:"Certified Cloud Security Practitioner — AWS", prov:"The SecOps Group", col:"cloud", lvl:2, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"PCRP", full:"Practical Cloud Red Teamer", prov:"TCM Security", col:"cloud", lvl:2, price:"~$ varies", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"CARTP*", full:"Certified Az Red Team Professional (hybrid AD)", prov:"Altered Security", col:"cloud", lvl:2, price:"~$549", req:true, url:"https://www.alteredsecurity.com/cartp"},
+  {code:"GCPN", full:"GIAC Cloud Penetration Tester (SEC588)", prov:"GIAC / SANS", col:"cloud", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/cloud-penetration-tester-gcpn/"},
+  {code:"CARTE", full:"Certified Az Red Team Expert", prov:"Altered Security", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://www.alteredsecurity.com/certifications"},
+  {code:"CCPenX-AWS", full:"Certified Cloud Pentesting eXpert — AWS", prov:"The SecOps Group", col:"cloud", lvl:3, price:"~$ varies", req:false, url:"https://secops.group/"},
+  {code:"CMCRT", full:"Multi-Cloud Red Team Analyst", prov:"CyberWarFare Labs", col:"cloud", lvl:3, price:"~$ varies", req:true, url:"https://cyberwarfare.live/"},
+
+  /* ---------------- AI / ML OFFENSIVE ---------------- */
+  {code:"Offensive AI", full:"Generative AI for Pentesters (eJPT path module)", prov:"INE Security", col:"ai", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
+  {code:"HTB AI RT", full:"AI Red Teamer (job-role path, w/ Google)", prov:"Hack The Box", col:"ai", lvl:2, price:"~$ (sub)", req:true, url:"https://academy.hackthebox.com/"},
+  {code:"AIRTP+", full:"AI Red Teaming Professional", prov:"Learn Prompting", col:"ai", lvl:2, price:"~$ varies", req:true, url:"https://learnprompting.org/certificates/ai-red-teaming-professional-certification"},
+  {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
+  {code:"COASP", full:"Certified Offensive AI Security Professional", prov:"EC-Council", col:"ai", lvl:2, price:"~$ varies", req:true, url:"https://www.eccouncil.org/ai-courses/certified-offensive-ai-security-professional-coasp/"},
+  {code:"OSAI / OSAI+", full:"OffSec AI Red Teamer (AI-300)", prov:"OffSec", col:"ai", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/ai-300/"},
+  {code:"CAIPT-RT", full:"Certified AI Penetration Tester — Red Team", prov:"Tonex", col:"ai", lvl:3, price:"~$ varies", req:true, url:"https://www.tonex.com/training-courses/certified-ai-penetration-tester-red-team-caipt-rt/"},
+  {code:"GASAE", full:"GIAC AI Security Automation Engineer", prov:"GIAC / SANS", col:"ai", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/"},
+
+  /* ---------------- IoT · HARDWARE · OT/ICS ---------------- */
+  {code:"PIPA", full:"Practical IoT Pentest Associate", prov:"TCM Security", col:"iot", lvl:1, price:"~$179", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"CIoTSP", full:"Certified IoT Security Practitioner", prov:"CertNexus", col:"iot", lvl:1, price:"~$300", req:false, url:"https://certnexus.com/certification/ciotsp/"},
+  {code:"SEC556", full:"IoT Penetration Testing (course + badge)", prov:"SANS", col:"iot", lvl:2, price:"~$8,780 course", req:true, url:"https://www.sans.org/cyber-security-courses/iot-penetration-testing/"},
+  {code:"OIoTE", full:"Offensive IoT Exploitation (training)", prov:"Attify", col:"iot", lvl:2, price:"~$ varies", req:true, url:"https://www.attify.com/"},
+  {code:"GICSP", full:"Global Industrial Cyber Security Professional", prov:"GIAC / SANS", col:"iot", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/global-industrial-cyber-security-professional-gicsp/"},
+  {code:"ICS613", full:"ICS/OT Penetration Testing & Assessments", prov:"SANS", col:"iot", lvl:3, price:"~$8,780 course", req:true, url:"https://www.sans.org/cyber-security-courses/ics-ot-penetration-testing-assessments/"},
+
+  /* ---------------- SAP / ERP ---------------- */
+  {code:"RedRays SAP", full:"Practical SAP Security (offensive training)", prov:"RedRays", col:"sap", lvl:2, price:"~$ varies (3-day)", req:true, url:"https://redrays.io/sap-security-training/"},
+  {code:"Onapsis", full:"SAP Security / pentest training", prov:"Onapsis", col:"sap", lvl:2, price:"~$ varies", req:true, url:"https://onapsis.com/"},
+  {code:"Attack SAP", full:"Attack & Secure SAP (conference training)", prov:"Troopers / community", col:"sap", lvl:3, price:"~$ varies", req:true, url:"https://troopers.de/"}
+];
+
+/* ---- version stamp ---- */
+const today=new Date();
+const verStr="OffSec Roadmap v1.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" entries";
+document.getElementById('footver').textContent=verStr;
+
+/* ---- build provider filter ---- */
+const provSel=document.getElementById('prov');
+[...new Set(CERTS.map(c=>c.prov))].sort().forEach(p=>{
+  const o=document.createElement('option');o.value=p;o.textContent=p;provSel.appendChild(o);
+});
+
+/* ---- render ---- */
+const chart=document.getElementById('chart');
+function render(){
+  chart.innerHTML="";
+  // axis
+  const axis=document.createElement('div');axis.className="axis";
+  LEVELS.forEach(l=>{const d=document.createElement('div');d.className="lvl";d.textContent=l;axis.appendChild(d);});
+  chart.appendChild(axis);
+
+  COLUMNS.forEach(col=>{
+    const c=document.createElement('div');c.className="col";
+    const head=document.createElement('div');head.className="col-head";
+    head.style.background="var(--"+col.id+")";head.style.borderBottomColor="var(--"+col.id+"-dk)";
+    head.textContent=col.label;c.appendChild(head);
+    for(let lvl=1;lvl<=4;lvl++){
+      const band=document.createElement('div');band.className="band";
+      band.dataset.lvl=LEVELS[lvl-1];
+      band.style.setProperty('--bandtint',lvl%2? 'rgba(255,255,255,.012)':'transparent');
+      const items=CERTS.filter(x=>x.col===col.id&&x.lvl===lvl);
+      if(items.length===0){band.classList.add('empty');band.innerHTML="<span>·</span>";}
+      items.forEach((x,i)=>band.appendChild(makeCert(x,col.id,lvl,i)));
+      c.appendChild(band);
+    }
+    chart.appendChild(c);
+  });
+  applyFilter();
+}
+
+function makeCert(x,colid,lvl,idx){
+  const a=document.createElement('a');
+  a.className="cert"+((lvl<=1)?" tipdown":"");
+  a.href=x.url;a.target="_blank";a.rel="noopener";a.tabIndex=0;
+  a.style.background="var(--"+colid+")";
+  a.style.borderColor="var(--"+colid+"-dk)";
+  a.dataset.search=(x.code+" "+x.full+" "+x.prov).toLowerCase();
+  a.dataset.prov=x.prov;a.dataset.req=x.req;
+  a.innerHTML=
+    '<span class="req">'+(x.req?'●':'○')+'</span>'+
+    x.code+'<span class="pv">'+x.prov+'</span>'+
+    '<div class="tip" style="--tipline:var(--'+colid+')">'+
+      '<div class="t-name">'+x.code+'</div>'+
+      '<div class="t-full">'+x.full+'</div>'+
+      '<div class="t-row"><span class="k">Provider</span><span class="v">'+x.prov+'</span></div>'+
+      '<div class="t-row"><span class="k">Approx. cost</span><span class="v">'+x.price+'</span></div>'+
+      '<div class="t-row"><span class="k">Course</span><span class="v">'+(x.req?'required':'not required')+'</span></div>'+
+      '<span class="t-tag">'+LEVELS[lvl-1]+'</span>'+
+      '<span class="t-go">↗ open official page</span>'+
+    '</div>';
+  return a;
+}
+
+/* ---- filtering ---- */
+const q=document.getElementById('q'),reqOnly=document.getElementById('reqOnly'),
+      countEl=document.getElementById('count'),reqPill=document.getElementById('reqPill');
+function applyFilter(){
+  const term=q.value.trim().toLowerCase();
+  const prov=provSel.value;const ro=reqOnly.checked;
+  reqPill.classList.toggle('on',ro);
+  let shown=0;
+  document.querySelectorAll('.cert').forEach(el=>{
+    let ok=true;
+    if(term && !el.dataset.search.includes(term))ok=false;
+    if(prov && el.dataset.prov!==prov)ok=false;
+    if(ro && el.dataset.req!=="true")ok=false;
+    el.classList.toggle('dim',!ok);
+    if(ok)shown++;
+  });
+  countEl.textContent=shown+" / "+CERTS.length+" shown";
+}
+[q,provSel,reqOnly].forEach(el=>el.addEventListener('input',applyFilter));
+
+/* ---- notes ---- */
+document.getElementById('notes').innerHTML=
+  '<b>Reading the map:</b> ● = vendor course/lab required to sit the exam · ○ = exam can be taken independently. '+
+  'Columns are domains; rows are proficiency (Foundational → Expert). Some certs span domains — e.g. '+
+  '<b>CARTP</b> appears under Cloud and is also a hybrid-AD red-team cert; <b>OSEP</b> doubles as advanced infra. '+
+  '<b>SAP offensive note:</b> there is no flagship vendor-neutral offensive SAP certification — the field is covered by '+
+  'specialist training (RedRays, Onapsis, conference workshops), so those are listed as trainings rather than exams.';
+
+render();
+</script>
+</body>
+</html>
