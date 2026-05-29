@@ -578,9 +578,11 @@ const today=new Date();
 const verStr="Security Cert Roadmap v2.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
 document.getElementById('footver').textContent=verStr;
 
-/* ---- build provider filter ---- */
+/* ---- build provider filter (split "GIAC / SANS" etc. into individual options) ---- */
 const provSel=document.getElementById('prov');
-[...new Set(CERTS.map(c=>c.prov))].sort().forEach(p=>{
+const provSet=new Set();
+CERTS.forEach(c=>c.prov.split(" / ").forEach(p=>provSet.add(p.trim())));
+[...provSet].sort((a,b)=>a.localeCompare(b)).forEach(p=>{
   const o=document.createElement('option');o.value=p;o.textContent=p;provSel.appendChild(o);
 });
 
@@ -679,20 +681,27 @@ const q=document.getElementById('q'),reqOnly=document.getElementById('reqOnly'),
       countEl=document.getElementById('count'),reqPill=document.getElementById('reqPill');
 function applyFilter(){
   const term=q.value.trim().toLowerCase();
-  const prov=provSel.value;const ro=reqOnly.checked;
+  const prov=provSel.value.toLowerCase();const ro=reqOnly.checked;
   reqPill.classList.toggle('on',ro);
+  const active=!!(term||prov||ro);
   let shown=0;
   document.querySelectorAll('.cert').forEach(el=>{
     let ok=true;
     if(term && !el.dataset.search.includes(term))ok=false;
-    if(prov && el.dataset.prov!==prov)ok=false;
+    if(prov && !el.dataset.prov.toLowerCase().includes(prov))ok=false;
     if(ro && el.dataset.req!=="true")ok=false;
-    el.classList.toggle('dim',!ok);
+    el.style.display=ok?"":"none";          // hide non-matches, not just dim
     if(ok)shown++;
   });
-  countEl.textContent=shown+" / "+document.querySelectorAll('.cert').length+" in view";
+  // collapse columns that have no visible cert while a filter is active
+  document.querySelectorAll('.col').forEach(col=>{
+    const has=[...col.querySelectorAll('.cert')].some(c=>c.style.display!=="none");
+    col.style.display=(active&&!has)?"none":"";
+  });
+  const total=document.querySelectorAll('.cert').length;
+  countEl.textContent=active?(shown+" / "+total+" match"):(total+" in view");
 }
-[q,provSel,reqOnly].forEach(el=>el.addEventListener('input',applyFilter));
+[q,provSel,reqOnly].forEach(el=>{el.addEventListener('input',applyFilter);el.addEventListener('change',applyFilter);});
 
 /* ---- notes ---- */
 document.getElementById('notes').innerHTML=
