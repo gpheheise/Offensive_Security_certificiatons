@@ -142,7 +142,7 @@
   .dim{opacity:.16;filter:grayscale(.6)}
 
   /* ---------- Pro Labs & Cyber Ranges ---------- */
-  :root{ --htb:#9fef00; --htb-dk:#6fae00; --hs:#ff7a59; --hs-dk:#c9543a; }
+  :root{ --htb:#9fef00; --htb-dk:#6fae00; --hs:#ff7a59; --hs-dk:#c9543a; --vl:#3ac0e8; --vl-dk:#1d8cae; }
   .ranges{padding:26px 22px 6px;border-top:1px solid var(--line);margin-top:22px;
     background:radial-gradient(900px 220px at 50% -30%, rgba(159,239,0,.05), transparent 65%);}
   .ranges h2{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:-.4px;
@@ -154,8 +154,8 @@
   .rlegend .grp{display:flex;align-items:center;gap:7px}
   .rlegend .sw{width:13px;height:13px;border-radius:3px}
   .tiers{display:flex;flex-direction:column;gap:10px;padding:14px 0 4px}
-  .tierrow{display:grid;grid-template-columns:108px 1fr;gap:12px;align-items:stretch}
-  .tier-label{font-family:"Archivo",sans-serif;font-weight:700;font-size:11px;letter-spacing:1.2px;
+  .tierrow{display:grid;grid-template-columns:158px 1fr;gap:14px;align-items:stretch;padding-left:6px}
+  .tier-label{font-family:"Archivo",sans-serif;font-weight:700;font-size:11px;letter-spacing:.6px;white-space:nowrap;
     text-transform:uppercase;color:var(--ink);display:flex;align-items:center;justify-content:flex-end;
     text-align:right;padding-right:12px;border-right:2px solid var(--line)}
   .tier-label small{display:block;color:var(--ink-dim);font-weight:400;letter-spacing:0;
@@ -175,6 +175,18 @@
   .labcard .lc-for{font-size:11px;color:var(--ink-dim);margin-top:6px;line-height:1.35}
   .labcard .lc-for b{color:var(--cardc,var(--htb));font-weight:600}
   .labcard .lc-go{font-size:10px;color:var(--ink-dim);font-family:"IBM Plex Mono";margin-top:7px}
+  .lc-badge{font-size:8px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;
+    padding:2px 6px;border-radius:4px;margin-left:6px;border:1px solid currentColor}
+  .lc-badge.mini{color:var(--htb)}
+  .lc-badge.free{color:#7ee0ff}
+  .lc-badge.ent{color:#ffb44d}
+  .labcard.is-ent{border-style:dashed;background:linear-gradient(var(--panel),var(--panel)) padding-box}
+  .entblock{margin-top:18px;padding:16px;border:1px dashed #6a5320;border-radius:10px;
+    background:rgba(255,173,0,.04)}
+  .entblock h3{font-family:"Archivo";font-weight:700;font-size:13.5px;margin:0 0 4px;color:#ffc266}
+  .entblock p{margin:0 0 12px;font-size:12px;color:var(--ink-dim);line-height:1.5;max-width:82ch}
+  .entblock p b{color:var(--ink)}
+  .entcards{display:flex;gap:10px;flex-wrap:wrap}
   @media (max-width:860px){
     .tierrow{grid-template-columns:1fr;gap:6px}
     .tier-label{justify-content:flex-start;text-align:left;border-right:none;
@@ -249,14 +261,27 @@
     dominance. They are <b>not proctored certifications</b>: instead of an exam, finishing one earns a
     <b>certificate-style completion acknowledgement / badge</b>. That makes them ideal for <b>building and proving
     hands-on skill</b> — preparing for OSCP / CRTO / CPTS, rehearsing real red-team and AD tradecraft, or showing a
-    hiring manager you can clear a realistic environment. Difficulty rises left-to-right; pick a lab that matches where
-    you are, not where you want the badge to look.
+    hiring manager you can clear a realistic environment. Difficulty follows HTB's own scale —
+    <b>Beginner → Intermediate → Advanced</b> (left-to-right). HTB ships these in two sizes: full <b>Pro Labs</b>
+    and shorter <b>Mini Pro Labs</b>. Much of the Mini Pro Labs catalogue (and the Wutai / Shinra Pro Labs) originated
+    on <b>VulnLab</b> (by xct), which HTB acquired and folded in — those carry an <i>ex-VulnLab</i> note. A parallel
+    <b>enterprise-only</b> tier mirrors all of this for teams — see the block at the bottom.
   </p>
   <div class="rlegend">
-    <span class="grp"><span class="sw" style="background:var(--htb)"></span>Hack The Box — Pro Labs (subscription / Cubes; completion certificate)</span>
+    <span class="grp"><span class="sw" style="background:var(--htb)"></span>Hack The Box — Pro Labs &amp; Mini Pro Labs (subscription; completion certificate)</span>
+    <span class="grp"><span class="lc-badge mini" style="border:none;padding:0">Mini</span> = Mini Pro Lab &nbsp;·&nbsp; <span class="lc-badge free" style="border:none;padding:0">Free</span> = free to play &nbsp;·&nbsp; <span style="color:var(--vl)">ex-VulnLab</span> = originated on VulnLab</span>
     <span class="grp"><span class="sw" style="background:var(--hs)"></span>HackSmarter — affordable labs &amp; paths (some issue named certs)</span>
   </div>
   <div class="tiers" id="tiers"></div>
+
+  <div class="entblock">
+    <h3>Enterprise-only — HTB Enterprise Platform (not sold to individuals)</h3>
+    <p>The same content runs on HTB's business platform under different containers, provisioned per-organisation for
+    team training, onboarding and benchmarking. You can't buy these as an individual — they require an
+    <b>HTB Enterprise</b> contract. Dedicated Labs also carries <b>exclusive content not on the public side</b>
+    (recently: AI supply-chain exploitation, malware analysis, identity-governance abuse, satellite challenges).</p>
+    <div class="entcards" id="entcards"></div>
+  </div>
 </section>
 
 <div class="notes" id="notes"></div>
@@ -517,25 +542,71 @@ render();
    prov : "HTB" | "HS"   tier: 1 Entry | 2 Intermediate | 3 Advanced | 4 Expert
    ========================================================================= */
 const LAB_TIERS=[
-  {n:1,label:"Entry",     sub:"foundations / OSCP-prep"},
-  {n:2,label:"Intermediate",sub:"enterprise & AD"},
-  {n:3,label:"Advanced",  sub:"hardened / real-world"},
-  {n:4,label:"Expert",    sub:"elite red team"}
+  {n:1,label:"Beginner",    sub:"foundations / OSCP-prep"},
+  {n:2,label:"Intermediate",sub:"enterprise & Active Directory"},
+  {n:3,label:"Advanced",    sub:"hardened, real-world & red team"}
 ];
+/* Classification, difficulty (Beginner/Intermediate/Advanced) and machine/flag counts taken
+   from the live HTB Pro Labs catalogue. tag:"mini" => Mini Pro Lab; vl:true => originated on
+   VulnLab (xct), now integrated into HTB; free:true => free to play. */
 const LABS=[
-  /* HTB Pro Labs */
-  {name:"Dante", prov:"HTB", tier:1, focus:"General pentest methodology, pivoting across Linux & Windows hosts.", who:"OSCP-prep & junior pentesters building a repeatable methodology.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  {name:"Zephyr", prov:"HTB", tier:2, focus:"Active Directory enumeration & exploitation; corporate foothold to escalation.", who:"Pentesters moving into AD / enterprise engagements.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  {name:"RastaLabs", prov:"HTB", tier:2, focus:"Red-team simulation: AD + simulated users, AV/Defender evasion, C2 ops.", who:"Aspiring red teamers learning evasion and command & control.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  {name:"Offshore", prov:"HTB", tier:3, focus:"Real-world enterprise AD with a wide range of modern misconfigurations & lateral movement.", who:"Experienced pentesters drilling deep AD attack chains.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  {name:"Cybernetics", prov:"HTB", tier:3, focus:"Hardened, fully-patched Windows AD — reach Domain Admin against active defenses.", who:"Seasoned pentesters & red teamers wanting a brutal AD challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  {name:"APTLabs", prov:"HTB", tier:4, focus:"Targeted external attack against a Managed Service Provider (MSP); HTB's hardest pro lab.", who:"Elite red teamers proving end-to-end operator capability.", url:"https://www.hackthebox.com/hacker/pro-labs"},
-  /* HackSmarter labs & paths */
-  {name:"HS · OSCP Prep", prov:"HS", tier:1, focus:"Curated OSCP-style box path with walkthroughs and community support.", who:"OSCP candidates who want affordable, structured practice.", url:"https://paths.hacksmarter.org/"},
-  {name:"HS · Active Directory", prov:"HS", tier:2, focus:"Hands-on AD attack-path labs (Kerberos, delegation, lateral movement).", who:"Anyone building AD tradecraft on a budget.", url:"https://www.hacksmarter.org/"},
-  {name:"HS · Web App Pentesting", prov:"HS", tier:2, focus:"Web application pentesting course + labs with a named completion certification.", who:"Web / AppSec learners wanting a cert-backed path.", url:"https://www.hacksmarter.org/"},
-  {name:"HS · AWS Pentesting", prov:"HS", tier:2, focus:"Cloud pentest scenarios with CloudGoat & Pacu — EC2, Lambda credential theft, IAM privesc.", who:"Cloud-curious pentesters starting AWS offense.", url:"https://www.hacksmarter.org/"}
+  /* ---- Beginner ---- */
+  {name:"Dante", prov:"HTB", tier:1, focus:"General pentest methodology & pivoting across Linux/Windows hosts.", who:"OSCP-prep & juniors building a repeatable methodology.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"P.O.O", prov:"HTB", tier:1, tag:"mini", focus:"Compact beginner Active Directory scenario.", who:"First taste of small AD attack chains.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+
+  /* ---- Intermediate (Pro Labs) ---- */
+  {name:"Zephyr", prov:"HTB", tier:2, focus:"AD enumeration & exploitation; corporate foothold to escalation.", who:"Pentesters moving into AD / enterprise engagements.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"RastaLabs", prov:"HTB", tier:2, focus:"Red-team simulation: AD + simulated users, AV/Defender evasion, C2.", who:"Aspiring red teamers learning evasion & C2.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Offshore", prov:"HTB", tier:2, focus:"Real-world enterprise AD with many modern misconfigurations & lateral movement.", who:"Pentesters drilling broad AD attack chains.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Shinra", prov:"HTB", tier:2, vl:true, focus:"14 machines / 12 flags — covert ops: bypass EDR, evade SOC, abuse trusted systems.", who:"Transitioning from pentesting to stealthy red team.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Ifrit", prov:"HTB", tier:2, focus:"10 machines / 7 flags — broad enterprise attack surface.", who:"Practising end-to-end enterprise compromise.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Wanderer", prov:"HTB", tier:2, focus:"10 machines / 20 flags — large newer enterprise scenario.", who:"Players wanting a meaty mid-level environment.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Alchemy", prov:"HTB", tier:2, focus:"Enterprise environment spanning varied technologies & services.", who:"Rounding out intermediate enterprise skills.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  /* ---- Intermediate (Mini Pro Labs) ---- */
+  {name:"Unintended", prov:"HTB", tier:2, tag:"mini", vl:true, focus:"3 machines / 4 flags — short intermediate scenario.", who:"Quick intermediate engagement.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"FullHouse", prov:"HTB", tier:2, tag:"mini", focus:"Compact themed intermediate lab.", who:"Evening-sized intermediate run.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Xen", prov:"HTB", tier:2, tag:"mini", focus:"Short intermediate engagement.", who:"Focused intermediate practice.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+
+  /* ---- Advanced (Pro Labs) ---- */
+  {name:"Cybernetics", prov:"HTB", tier:3, focus:"28 machines / 25 flags — hardened, fully-patched Windows AD; reach DA vs active defenses.", who:"Seasoned pros wanting a brutal AD challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"APTLabs", prov:"HTB", tier:3, focus:"18 machines / 20 flags — targeted attack vs an MSP; HTB's flagship hardest pro lab.", who:"Elite red teamers proving end-to-end capability.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Wutai", prov:"HTB", tier:3, vl:true, focus:"Acclaimed enterprise red-team lab (ESXi, Bitwarden, Kasm) — evasion, phishing, pivoting.", who:"Red teamers wanting a masterclass environment.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  /* ---- Advanced (Mini Pro Labs) ---- */
+  {name:"Mythical", prov:"HTB", tier:3, tag:"mini", free:true, focus:"3 machines / 3 flags — free advanced mini lab.", who:"Free taste of advanced AD/red-team work.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Puppet", prov:"HTB", tier:3, tag:"mini", free:true, focus:"3 machines / 4 flags — free advanced mini lab.", who:"Free advanced challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Trusted", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"2 machines — internal red-team start from zero credentials.", who:"Assess posture from an insider position.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Reflection", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"3 machines / 3 flags — chain weaknesses across services & identity to Domain Admin.", who:"Time-efficient advanced AD run.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Intercept", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"Short advanced red-team scenario.", who:"Quick advanced engagement.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Control", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"2 machines / 3 flags — advanced mini lab.", who:"Sharp, focused advanced run.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Push", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"2 machines / 2 flags — advanced mini lab.", who:"Bite-sized advanced challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Sidecar", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"2 machines / 2 flags — advanced mini lab.", who:"Bite-sized advanced challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Tengu", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"Advanced themed AD mini lab.", who:"Advanced AD practice.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Kaiju", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"3-machine AD chain modelled on a real engagement.", who:"Realistic advanced AD chain.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Tea", prov:"HTB", tier:3, tag:"mini", vl:true, focus:"Advanced themed mini lab.", who:"Focused advanced run.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Klendathu", prov:"HTB", tier:3, tag:"mini", focus:"Advanced multi-host mini lab.", who:"Advanced enterprise practice.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Heron", prov:"HTB", tier:3, tag:"mini", focus:"Advanced themed mini lab.", who:"Advanced engagement practice.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Solar", prov:"HTB", tier:3, tag:"mini", focus:"Advanced mini lab — multi-stage scenario.", who:"Advanced short-form mission.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Odyssey", prov:"HTB", tier:3, tag:"mini", focus:"Advanced mini lab — multi-stage scenario.", who:"Advanced short-form mission.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Ascension", prov:"HTB", tier:3, tag:"mini", focus:"4 machines / 7 flags — advanced mini lab.", who:"Advanced run in a condensed footprint.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"RPG", prov:"HTB", tier:3, tag:"mini", focus:"4 machines / 6 flags — advanced themed mini lab.", who:"Advanced focused challenge.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+  {name:"Hades", prov:"HTB", tier:3, tag:"mini", focus:"Advanced mini lab.", who:"Advanced engagement practice.", url:"https://www.hackthebox.com/hacker/pro-labs"},
+
+  /* ---- HackSmarter labs & paths ---- */
+  {name:"HS · OSCP Prep", prov:"HS", tier:1, focus:"Curated OSCP-style box path with walkthroughs & community support.", who:"OSCP candidates wanting affordable, structured practice.", url:"https://paths.hacksmarter.org/"},
+  {name:"HS · Active Directory", prov:"HS", tier:2, focus:"Hands-on AD attack-path labs (Kerberos, delegation, lateral movement).", who:"Building AD tradecraft on a budget.", url:"https://www.hacksmarter.org/"},
+  {name:"HS · Web App Pentesting", prov:"HS", tier:2, focus:"Web app pentesting course + labs with a named completion certification.", who:"Web / AppSec learners wanting a cert-backed path.", url:"https://www.hacksmarter.org/"},
+  {name:"HS · AWS Pentesting", prov:"HS", tier:2, focus:"Cloud pentest scenarios with CloudGoat & Pacu — EC2, Lambda creds, IAM privesc.", who:"Cloud-curious pentesters starting AWS offense.", url:"https://www.hacksmarter.org/"}
 ];
+
+/* HTB Enterprise Platform — business-only containers (not sold to individuals) */
+const ENTERPRISE=[
+  {name:"Dedicated Labs", focus:"Org-provisioned curated labs for ongoing team training — plus exclusive content (AI supply-chain, malware analysis, identity-governance abuse) not on the public platform.", who:"Security teams running continuous upskilling & benchmarking.", url:"https://www.hackthebox.com/business"},
+  {name:"Professional Labs", focus:"Enterprise mirror of full Pro Labs (e.g. Shinra, Reflection, Trusted) deployed for a whole team.", who:"Orgs onboarding or stress-testing red teams at scale.", url:"https://www.hackthebox.com/business"},
+  {name:"Mini Professional Labs", focus:"Enterprise mirror of Mini Pro Labs — short, RTO-ranked scenarios for team drills.", who:"Teams wanting bite-sized, assignable engagements.", url:"https://www.hackthebox.com/business"}
+];
+
+function provColor(p){return p==="HTB"?"var(--htb)":p==="VL"?"var(--vl)":"var(--hs)";}
+function provName(p){return p==="HTB"?"HTB":p==="VL"?"VulnLab":"HackSmarter";}
 
 function renderLabs(){
   const wrap=document.getElementById('tiers');if(!wrap)return;wrap.innerHTML="";
@@ -544,16 +615,18 @@ function renderLabs(){
     const lab=document.createElement('div');lab.className="tier-label";
     lab.innerHTML=t.label+"<small>"+t.sub+"</small>";row.appendChild(lab);
     const cards=document.createElement('div');cards.className="labcards";
-    const items=LABS.filter(l=>l.tier===t.n);
-    items.forEach(l=>{
-      const c=l.prov==="HTB"?"var(--htb)":"var(--hs)";
+    LABS.filter(l=>l.tier===t.n).forEach(l=>{
+      const c=provColor(l.prov);
       const a=document.createElement('a');a.className="labcard";
       a.href=l.url;a.target="_blank";a.rel="noopener";a.tabIndex=0;
       a.style.setProperty('--cardc',c);
+      const badge=(l.tag==="mini"?'<span class="lc-badge mini">Mini</span>':'')+
+                  (l.free?'<span class="lc-badge free">Free</span>':'');
+      const vlnote=l.vl?' <span style="color:var(--vl)">· ex-VulnLab</span>':'';
       a.innerHTML=
-        '<div class="lc-top"><span class="lc-name">'+l.name.replace(/^HS · /,'')+'</span>'+
-          '<span class="lc-prov">'+(l.prov==="HTB"?"HTB":"HackSmarter")+'</span></div>'+
-        '<div class="lc-focus">'+l.focus+'</div>'+
+        '<div class="lc-top"><span class="lc-name">'+l.name.replace(/^HS · /,'')+badge+'</span>'+
+          '<span class="lc-prov">'+provName(l.prov)+'</span></div>'+
+        '<div class="lc-focus">'+l.focus+vlnote+'</div>'+
         '<div class="lc-for"><b>Best for:</b> '+l.who+'</div>'+
         '<div class="lc-go">↗ open lab</div>';
       cards.appendChild(a);
@@ -561,7 +634,23 @@ function renderLabs(){
     row.appendChild(cards);wrap.appendChild(row);
   });
 }
+function renderEnterprise(){
+  const wrap=document.getElementById('entcards');if(!wrap)return;wrap.innerHTML="";
+  ENTERPRISE.forEach(l=>{
+    const a=document.createElement('a');a.className="labcard is-ent";
+    a.href=l.url;a.target="_blank";a.rel="noopener";a.tabIndex=0;
+    a.style.setProperty('--cardc','#ffb44d');
+    a.innerHTML=
+      '<div class="lc-top"><span class="lc-name">'+l.name+'<span class="lc-badge ent">Enterprise</span></span>'+
+        '<span class="lc-prov" style="background:#ffb44d">HTB</span></div>'+
+      '<div class="lc-focus">'+l.focus+'</div>'+
+      '<div class="lc-for"><b>Best for:</b> '+l.who+'</div>'+
+      '<div class="lc-go">↗ HTB for Business</div>';
+    wrap.appendChild(a);
+  });
+}
 renderLabs();
+renderEnterprise();
 </script>
 </body>
 </html>
