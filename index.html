@@ -77,7 +77,7 @@
 
   /* ---------- Chart ---------- */
   .scrollwrap{overflow-x:auto;padding:18px 14px 8px}
-  .chart{display:flex;gap:12px;min-width:1180px;align-items:stretch}
+  .chart{display:flex;gap:12px;min-width:var(--chart-min,1180px);align-items:stretch}
   .axis{
     flex:0 0 30px;display:flex;flex-direction:column;justify-content:space-between;
     padding:46px 0 12px;
@@ -194,6 +194,29 @@
     .labcard{flex:1 1 240px;max-width:360px}
   }
 
+  /* ---------- Track switcher & new domain colours ---------- */
+  :root{
+    --def_soc:#2f6fb0; --def_soc-dk:#1f4a78;
+    --def_dfir:#0e9aa7; --def_dfir-dk:#076b73;
+    --def_intel:#5b6ee8; --def_intel-dk:#3a48a8;
+    --ca_cloud:#3588c9; --ca_cloud-dk:#1f5e91;
+    --ca_arch:#e08a1e; --ca_arch-dk:#a8640f;
+    --ca_net:#3a9b54; --ca_net-dk:#236b39;
+    --ca_iam:#28a39d; --ca_iam-dk:#176b66;
+    --grc_gov:#46557a; --grc_gov-dk:#2e3a57;
+    --grc_risk:#6b7280; --grc_risk-dk:#474d57;
+    --grc_audit:#5a6472; --grc_audit-dk:#3c4350;
+    --grc_priv:#b8902f; --grc_priv-dk:#836619;
+  }
+  .tracks{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .track-btn{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
+    padding:9px 15px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;
+    font-family:"Archivo",sans-serif;letter-spacing:.2px;transition:all .12s}
+  .track-btn:hover{color:var(--ink);border-color:var(--ink-dim)}
+  .track-btn.on{color:#0e1116;background:var(--accent);border-color:var(--accent)}
+  .track-blurb{margin:10px 0 0;font-size:12.5px;color:var(--ink-dim);line-height:1.5;max-width:80ch}
+  .track-blurb b{color:var(--ink)}
+
   /* note strip */
   .notes{padding:8px 22px 4px;color:var(--ink-dim);font-size:12px;line-height:1.5}
   .notes b{color:var(--ink)}
@@ -222,31 +245,25 @@
 </head>
 <body>
 <header class="hero">
-  <h1>Offensive Security <span class="acc">Certification Roadmap</span></h1>
-  <p class="sub">A red-team / penetration-testing-only map of current trainings &amp; certifications, organised by
-  domain (columns) and proficiency (rows). Hover a box for the provider, full name, approximate exam cost and whether a
-  course is required. Click to open the official page. Inspired by Paul Jeremy's
-  <code>Security Certification Roadmap</code>, rebuilt offensive-only and data-driven.</p>
+  <h1>Security <span class="acc">Certification Roadmap</span></h1>
+  <p class="sub">A current map of security trainings &amp; certifications, organised by domain (columns) and proficiency
+  (rows). Pick a <b>track</b> below to see only the certs relevant to that audience — so a CISO isn't wading through
+  hacking certs, and a red teamer isn't scrolling past audit credentials. Hover any box for the provider, full name,
+  approximate cost and whether a course is required; click to open the official page. Offensive-first and deep, with
+  the other domains layered in. Inspired by Paul Jeremy's <code>Security Certification Roadmap</code>, rebuilt
+  data-driven and audience-segmented.</p>
+
+  <div class="tracks" id="tracks"></div>
+  <p class="track-blurb" id="trackBlurb"></p>
 
   <div class="controls">
-    <input type="search" id="q" placeholder="Search cert, provider, e.g. OSCP, AD, GIAC…" autocomplete="off">
+    <input type="search" id="q" placeholder="Search cert or provider, e.g. OSCP, CISSP, GIAC…" autocomplete="off">
     <select id="prov"><option value="">All providers</option></select>
     <label class="pill" id="reqPill"><input type="checkbox" id="reqOnly"> Course required only</label>
     <span class="count" id="count"></span>
   </div>
 
-  <div class="legend">
-    <span class="lvlkey">Levels:&nbsp; <b>Foundational</b> → <b>Intermediate</b> → <b>Advanced</b> → <b>Expert</b></span>
-    <span class="grp"><span class="sw" style="background:var(--general)"></span>Foundational / General</span>
-    <span class="grp"><span class="sw" style="background:var(--infra)"></span>Infra &amp; Active Directory</span>
-    <span class="grp"><span class="sw" style="background:var(--redteam)"></span>Red Team &amp; Evasion</span>
-    <span class="grp"><span class="sw" style="background:var(--exploit)"></span>Exploit Dev &amp; Reversing</span>
-    <span class="grp"><span class="sw" style="background:var(--web)"></span>Web · API · Mobile</span>
-    <span class="grp"><span class="sw" style="background:var(--cloud)"></span>Cloud</span>
-    <span class="grp"><span class="sw" style="background:var(--ai)"></span>AI / ML Offensive</span>
-    <span class="grp"><span class="sw" style="background:var(--iot)"></span>IoT · Hardware · OT/ICS</span>
-    <span class="grp"><span class="sw" style="background:var(--sap)"></span>SAP / ERP</span>
-  </div>
+  <div class="legend" id="legend"></div>
 </header>
 
 <div class="scrollwrap">
@@ -293,28 +310,49 @@
   subscription (you generally cannot challenge the exam independently).</p>
   <p>Concept &amp; original layout: Paul Jeremy —
   <a class="link" href="https://pauljerimy.com/security-certification-roadmap/" target="_blank" rel="noopener">pauljerimy.com/security-certification-roadmap</a>.
-  This offensive-only derivative is provided under <b>CC&nbsp;BY-SA&nbsp;4.0</b> in keeping with the original. Maintained by you — edit the
-  <code style="font-family:'IBM Plex Mono'">CERTS</code> array in this file to add, retire or re-price entries.</p>
+  This audience-segmented derivative is provided under <b>CC&nbsp;BY-SA&nbsp;4.0</b> in keeping with the original. Maintained by you — edit the
+  <code style="font-family:'IBM Plex Mono'">CERTS</code> / <code style="font-family:'IBM Plex Mono'">COLUMNS</code> / <code style="font-family:'IBM Plex Mono'">TRACKS</code> arrays in this file to add, retire or re-price entries.</p>
 </footer>
 
 <script>
 /* =========================================================================
-   EDIT HERE.  One object per certification.
-   col   : general | infra | redteam | exploit | web | cloud | ai | iot | sap
+   EDIT HERE.  Columns belong to a TRACK (audience). One object per cert below.
+   track : offensive | defensive | cloudarch | grc
    lvl   : 1 Foundational | 2 Intermediate | 3 Advanced | 4 Expert
    req   : true = vendor course/subscription required to sit the exam
-   price : approximate, string (verify before buying)
    ========================================================================= */
+const TRACKS = [
+  {id:"offensive", label:"Offensive / Red Team", blurb:"Penetration testing, red teaming, exploit dev and adversary simulation. The deepest track — also feeds the Pro Labs section below."},
+  {id:"defensive", label:"Defensive / Blue Team", blurb:"SOC, detection engineering, incident response, digital forensics, threat intel/hunting and malware analysis."},
+  {id:"cloudarch", label:"Cloud & Architecture", blurb:"Defensive cloud security, security architecture & engineering, network security and identity & access management."},
+  {id:"grc",       label:"GRC, Risk & Leadership", blurb:"The management view: governance, risk, audit, compliance, privacy and CISO-level credentials — no hacking certs."},
+  {id:"all",       label:"All domains", blurb:"The full Paul-Jeremy-style superset across every track. Wide — scroll horizontally."}
+];
 const COLUMNS = [
-  {id:"general", label:"Foundational & General Pentest"},
-  {id:"infra",   label:"Infrastructure & Active Directory"},
-  {id:"redteam", label:"Red Teaming & Evasion"},
-  {id:"exploit", label:"Exploit Dev & Reversing"},
-  {id:"web",     label:"Web · API · Mobile AppSec"},
-  {id:"cloud",   label:"Cloud Security"},
-  {id:"ai",      label:"AI / ML Offensive"},
-  {id:"iot",     label:"IoT · Hardware · OT/ICS"},
-  {id:"sap",     label:"SAP / ERP"}
+  /* Offensive */
+  {id:"general", track:"offensive", label:"Foundational & General Pentest"},
+  {id:"infra",   track:"offensive", label:"Infrastructure & Active Directory"},
+  {id:"redteam", track:"offensive", label:"Red Teaming & Evasion"},
+  {id:"exploit", track:"offensive", label:"Exploit Dev & Reversing"},
+  {id:"web",     track:"offensive", label:"Web · API · Mobile AppSec"},
+  {id:"cloud",   track:"offensive", label:"Cloud (Offensive)"},
+  {id:"ai",      track:"offensive", label:"AI / ML Offensive"},
+  {id:"iot",     track:"offensive", label:"IoT · Hardware · OT/ICS"},
+  {id:"sap",     track:"offensive", label:"SAP / ERP"},
+  /* Defensive */
+  {id:"def_soc",  track:"defensive", label:"SOC & Detection"},
+  {id:"def_dfir", track:"defensive", label:"Incident Response & Forensics"},
+  {id:"def_intel",track:"defensive", label:"Threat Intel · Hunting · Malware"},
+  /* Cloud & Architecture */
+  {id:"ca_cloud", track:"cloudarch", label:"Cloud Security"},
+  {id:"ca_arch",  track:"cloudarch", label:"Security Architecture & Eng."},
+  {id:"ca_net",   track:"cloudarch", label:"Network Security"},
+  {id:"ca_iam",   track:"cloudarch", label:"Identity & Access (IAM)"},
+  /* GRC, Risk & Leadership */
+  {id:"grc_gov",  track:"grc", label:"Governance & Leadership"},
+  {id:"grc_risk", track:"grc", label:"Risk Management"},
+  {id:"grc_audit",track:"grc", label:"Audit & Compliance"},
+  {id:"grc_priv", track:"grc", label:"Privacy & Data Protection"}
 ];
 const LEVELS = ["Foundational","Intermediate","Advanced","Expert"];
 
@@ -438,12 +476,106 @@ const CERTS = [
   /* ---------------- SAP / ERP ---------------- */
   {code:"RedRays SAP", full:"Practical SAP Security (offensive training)", prov:"RedRays", col:"sap", lvl:2, price:"~$ varies (3-day)", req:true, url:"https://redrays.io/sap-security-training/"},
   {code:"Onapsis", full:"SAP Security / pentest training", prov:"Onapsis", col:"sap", lvl:2, price:"~$ varies", req:true, url:"https://onapsis.com/"},
-  {code:"Attack SAP", full:"Attack & Secure SAP (conference training)", prov:"Troopers / community", col:"sap", lvl:3, price:"~$ varies", req:true, url:"https://troopers.de/"}
+  {code:"Attack SAP", full:"Attack & Secure SAP (conference training)", prov:"Troopers / community", col:"sap", lvl:3, price:"~$ varies", req:true, url:"https://troopers.de/"},
+
+  /* ================= DEFENSIVE / BLUE TEAM ================= */
+  /* SOC & Detection */
+  {code:"Security+", full:"CompTIA Security+", prov:"CompTIA", col:"def_soc", lvl:1, price:"~$415", req:false, url:"https://www.comptia.org/certifications/security"},
+  {code:"CySA+", full:"CompTIA Cybersecurity Analyst+", prov:"CompTIA", col:"def_soc", lvl:1, price:"~$425", req:false, url:"https://www.comptia.org/certifications/cybersecurity-analyst"},
+  {code:"BTL1", full:"Blue Team Level 1", prov:"Security Blue Team", col:"def_soc", lvl:1, price:"~$499", req:true, url:"https://www.securityblue.team/certifications"},
+  {code:"HTB CDSA", full:"Certified Defensive Security Analyst", prov:"Hack The Box", col:"def_soc", lvl:1, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-defensive-security-analyst"},
+  {code:"CCOA", full:"Certified Cybersecurity Operations Analyst", prov:"ISACA", col:"def_soc", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/ccoa"},
+  {code:"GSOC", full:"GIAC Security Operations Certified (SEC450)", prov:"GIAC / SANS", col:"def_soc", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/security-operations-certified-gsoc/"},
+  {code:"BTL2", full:"Blue Team Level 2", prov:"Security Blue Team", col:"def_soc", lvl:2, price:"~$ varies", req:true, url:"https://www.securityblue.team/certifications"},
+  {code:"GMON", full:"GIAC Continuous Monitoring (SEC511)", prov:"GIAC / SANS", col:"def_soc", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/continuous-monitoring-certification-gmon/"},
+  /* Incident Response & Forensics */
+  {code:"GCIH", full:"GIAC Certified Incident Handler (SEC504)", prov:"GIAC / SANS", col:"def_dfir", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/certified-incident-handler-gcih/"},
+  {code:"OSDA", full:"OffSec Defense Analyst (SOC-200)", prov:"OffSec", col:"def_dfir", lvl:2, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/soc-200/"},
+  {code:"OSIR", full:"OffSec Incident Responder (IR-200)", prov:"OffSec", col:"def_dfir", lvl:2, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/ir-200/"},
+  {code:"CHFI", full:"Computer Hacking Forensic Investigator", prov:"EC-Council", col:"def_dfir", lvl:2, price:"~$ varies", req:true, url:"https://www.eccouncil.org/programs/computer-hacking-forensic-investigator-chfi/"},
+  {code:"GCFE", full:"GIAC Certified Forensic Examiner (FOR500)", prov:"GIAC / SANS", col:"def_dfir", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/certified-forensic-examiner-gcfe/"},
+  {code:"GCFA", full:"GIAC Certified Forensic Analyst (FOR508)", prov:"GIAC / SANS", col:"def_dfir", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/certified-forensic-analyst-gcfa/"},
+  {code:"GNFA", full:"GIAC Network Forensic Analyst (FOR572)", prov:"GIAC / SANS", col:"def_dfir", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/network-forensic-analyst-gnfa/"},
+  {code:"GX-FA", full:"GIAC Experienced Forensic Analyst", prov:"GIAC / SANS", col:"def_dfir", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/"},
+  /* Threat Intel · Hunting · Malware */
+  {code:"GCTI", full:"GIAC Cyber Threat Intelligence (FOR578)", prov:"GIAC / SANS", col:"def_intel", lvl:2, price:"~$999", req:false, url:"https://www.giac.org/certifications/cyber-threat-intelligence-gcti/"},
+  {code:"eCTHP", full:"Certified Threat Hunting Professional", prov:"INE Security", col:"def_intel", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/"},
+  {code:"MAD ATT&CK", full:"MITRE ATT&CK Defender (CTI / SOC)", prov:"MITRE Engenuity", col:"def_intel", lvl:2, price:"~$ varies", req:true, url:"https://mad.mitre-engenuity.org/"},
+  {code:"GREM", full:"GIAC Reverse Engineering Malware (FOR610)", prov:"GIAC / SANS", col:"def_intel", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/reverse-engineering-malware-grem/"},
+  {code:"GDAT", full:"GIAC Defending Advanced Threats (SEC599)", prov:"GIAC / SANS", col:"def_intel", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/defending-advanced-threats-gdat/"},
+  {code:"Z2A", full:"Zero2Automated — Advanced Malware Analysis", prov:"Zero2Automated", col:"def_intel", lvl:3, price:"~$ varies", req:true, url:"https://courses.zero2auto.com/"},
+
+  /* ================= CLOUD & ARCHITECTURE ================= */
+  /* Cloud Security (defensive / architecture) */
+  {code:"SC-900", full:"Microsoft Security, Compliance & Identity Fundamentals", prov:"Microsoft", col:"ca_cloud", lvl:1, price:"~$99", req:false, url:"https://learn.microsoft.com/credentials/certifications/security-compliance-and-identity-fundamentals/"},
+  {code:"CCSK", full:"Certificate of Cloud Security Knowledge (v5)", prov:"Cloud Security Alliance", col:"ca_cloud", lvl:1, price:"~$395", req:false, url:"https://cloudsecurityalliance.org/education/ccsk/"},
+  {code:"AZ-500", full:"Azure Security Engineer Associate", prov:"Microsoft", col:"ca_cloud", lvl:2, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/azure-security-engineer/"},
+  {code:"AWS Sec Spec", full:"AWS Certified Security – Specialty", prov:"Amazon AWS", col:"ca_cloud", lvl:2, price:"~$300", req:false, url:"https://aws.amazon.com/certification/certified-security-specialty/"},
+  {code:"SC-200", full:"Microsoft Security Operations Analyst", prov:"Microsoft", col:"ca_cloud", lvl:2, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/security-operations-analyst/"},
+  {code:"GCP PCSE", full:"Google Professional Cloud Security Engineer", prov:"Google Cloud", col:"ca_cloud", lvl:2, price:"~$200", req:false, url:"https://cloud.google.com/learn/certification/cloud-security-engineer"},
+  {code:"CCSP", full:"Certified Cloud Security Professional", prov:"ISC2", col:"ca_cloud", lvl:3, price:"~$599", req:false, url:"https://www.isc2.org/certifications/ccsp"},
+  {code:"GCSA", full:"GIAC Cloud Security Automation (SEC540)", prov:"GIAC / SANS", col:"ca_cloud", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/cloud-security-automation-gcsa/"},
+  {code:"SC-100", full:"Microsoft Cybersecurity Architect Expert", prov:"Microsoft", col:"ca_cloud", lvl:3, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/cybersecurity-architect-expert/"},
+  {code:"CCZT", full:"Certificate of Competence in Zero Trust", prov:"Cloud Security Alliance", col:"ca_cloud", lvl:2, price:"~$ varies", req:false, url:"https://cloudsecurityalliance.org/education/cczt/"},
+  /* Security Architecture & Engineering */
+  {code:"SecurityX", full:"CompTIA SecurityX (formerly CASP+, CAS-005)", prov:"CompTIA", col:"ca_arch", lvl:2, price:"~$509", req:false, url:"https://www.comptia.org/certifications/securityx"},
+  {code:"CSSLP", full:"Certified Secure Software Lifecycle Professional", prov:"ISC2", col:"ca_arch", lvl:2, price:"~$599", req:false, url:"https://www.isc2.org/certifications/csslp"},
+  {code:"SABSA SCF", full:"SABSA Chartered Foundation", prov:"SABSA", col:"ca_arch", lvl:2, price:"~$ varies", req:true, url:"https://sabsa.org/certification/"},
+  {code:"GDSA", full:"GIAC Defensible Security Architecture (SEC530)", prov:"GIAC / SANS", col:"ca_arch", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/defensible-security-architecture-gdsa/"},
+  {code:"ISSAP", full:"CISSP-ISSAP — Architecture Concentration", prov:"ISC2", col:"ca_arch", lvl:3, price:"~$599", req:false, url:"https://www.isc2.org/certifications/issap"},
+  {code:"ISSEP", full:"CISSP-ISSEP — Engineering Concentration", prov:"ISC2", col:"ca_arch", lvl:3, price:"~$599", req:false, url:"https://www.isc2.org/certifications/issep"},
+  {code:"SABSA SCM", full:"SABSA Chartered Master", prov:"SABSA", col:"ca_arch", lvl:4, price:"~$ varies", req:true, url:"https://sabsa.org/certification/"},
+  /* Network Security */
+  {code:"CyberOps Assoc", full:"Cisco Certified CyberOps Associate", prov:"Cisco", col:"ca_net", lvl:1, price:"~$300", req:false, url:"https://www.cisco.com/site/us/en/learn/training-certifications/certifications/cyberops/cyberops-associate/index.html"},
+  {code:"FCP", full:"Fortinet Certified Professional — Network Security", prov:"Fortinet", col:"ca_net", lvl:2, price:"~$ varies", req:false, url:"https://www.fortinet.com/training/certification-program"},
+  {code:"PCNSE", full:"Palo Alto Networks Certified Network Security Engineer", prov:"Palo Alto", col:"ca_net", lvl:2, price:"~$175", req:false, url:"https://www.paloaltonetworks.com/services/education/certification"},
+  {code:"CCNP Security", full:"Cisco Certified Network Professional — Security", prov:"Cisco", col:"ca_net", lvl:3, price:"~$ per exam", req:false, url:"https://www.cisco.com/site/us/en/learn/training-certifications/certifications/security/ccnp-security/index.html"},
+  {code:"FCSS", full:"Fortinet Certified Solution Specialist", prov:"Fortinet", col:"ca_net", lvl:3, price:"~$ varies", req:false, url:"https://www.fortinet.com/training/certification-program"},
+  {code:"JNCIP-SEC", full:"Juniper Networks Certified Professional Security", prov:"Juniper", col:"ca_net", lvl:3, price:"~$ varies", req:false, url:"https://www.juniper.net/us/en/training/certification.html"},
+  /* Identity & Access (IAM) */
+  {code:"SC-300", full:"Microsoft Identity & Access Administrator", prov:"Microsoft", col:"ca_iam", lvl:2, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/identity-and-access-administrator/"},
+  {code:"CIDPRO", full:"Certified Identity Professional", prov:"IDPro", col:"ca_iam", lvl:2, price:"~$ varies", req:false, url:"https://idpro.org/cidpro/"},
+  {code:"CIMP", full:"Certified Identity Management Professional", prov:"Identity Mgmt Institute", col:"ca_iam", lvl:2, price:"~$ varies", req:false, url:"https://www.identitymanagementinstitute.org/cimp/"},
+  {code:"Okta Pro", full:"Okta Certified Professional", prov:"Okta", col:"ca_iam", lvl:1, price:"~$ varies", req:false, url:"https://www.okta.com/services/certification/"},
+  {code:"SailPoint Eng", full:"SailPoint IdentityNow Engineer", prov:"SailPoint", col:"ca_iam", lvl:3, price:"~$ varies", req:false, url:"https://www.sailpoint.com/university/certifications"},
+  {code:"CyberArk Defender", full:"CyberArk Defender / Sentry (PAM)", prov:"CyberArk", col:"ca_iam", lvl:2, price:"~$ varies", req:false, url:"https://www.cyberark.com/services-support/certification-program/"},
+
+  /* ================= GRC, RISK & LEADERSHIP ================= */
+  /* Governance & Leadership */
+  {code:"ISC2 CC", full:"Certified in Cybersecurity (entry)", prov:"ISC2", col:"grc_gov", lvl:1, price:"~$199", req:false, url:"https://www.isc2.org/certifications/cc"},
+  {code:"CISM", full:"Certified Information Security Manager", prov:"ISACA", col:"grc_gov", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/cism"},
+  {code:"CGRC", full:"Certified in Governance, Risk & Compliance (formerly CAP)", prov:"ISC2", col:"grc_gov", lvl:2, price:"~$599", req:false, url:"https://www.isc2.org/certifications/cgrc"},
+  {code:"CISSP", full:"Certified Information Systems Security Professional", prov:"ISC2", col:"grc_gov", lvl:3, price:"~$749", req:false, url:"https://www.isc2.org/certifications/cissp"},
+  {code:"CGEIT", full:"Certified in the Governance of Enterprise IT", prov:"ISACA", col:"grc_gov", lvl:3, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/cgeit"},
+  {code:"CCISO", full:"Certified Chief Information Security Officer", prov:"EC-Council", col:"grc_gov", lvl:3, price:"~$ varies", req:false, url:"https://ciso.eccouncil.org/cciso-certification/"},
+  {code:"ISSMP", full:"CISSP-ISSMP — Management Concentration", prov:"ISC2", col:"grc_gov", lvl:4, price:"~$599", req:false, url:"https://www.isc2.org/certifications/issmp"},
+  {code:"GSTRT", full:"GIAC Strategic Planning, Policy & Leadership", prov:"GIAC / SANS", col:"grc_gov", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/strategic-planning-policy-leadership-gstrt/"},
+  {code:"AAISM", full:"Advanced in AI Security Management", prov:"ISACA", col:"grc_gov", lvl:3, price:"~$ varies", req:false, url:"https://www.isaca.org/credentialing/aaism"},
+  /* Risk Management */
+  {code:"CRISC", full:"Certified in Risk & Information Systems Control", prov:"ISACA", col:"grc_risk", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/crisc"},
+  {code:"Open FAIR", full:"Open FAIR Risk Analysis", prov:"The Open Group", col:"grc_risk", lvl:2, price:"~$ varies", req:false, url:"https://www.opengroup.org/certifications/openfair"},
+  {code:"FAIR-FDN", full:"FAIR Institute Risk Quantification Foundation", prov:"FAIR Institute", col:"grc_risk", lvl:2, price:"~$ varies", req:false, url:"https://www.fairinstitute.org/"},
+  {code:"ISO 31000 RM", full:"ISO 31000 Risk Manager", prov:"PECB", col:"grc_risk", lvl:2, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-31000"},
+  {code:"IT Risk Fund.", full:"IT Risk Fundamentals", prov:"ISACA", col:"grc_risk", lvl:1, price:"~$ varies", req:false, url:"https://www.isaca.org/credentialing/it-risk-fundamentals-certificate"},
+  /* Audit & Compliance */
+  {code:"CISA", full:"Certified Information Systems Auditor", prov:"ISACA", col:"grc_audit", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/cisa"},
+  {code:"27001 LI", full:"ISO/IEC 27001 Lead Implementer", prov:"PECB / BSI", col:"grc_audit", lvl:2, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-27001"},
+  {code:"27001 LA", full:"ISO/IEC 27001 Lead Auditor", prov:"PECB / BSI", col:"grc_audit", lvl:2, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-27001"},
+  {code:"PCI QSA", full:"PCI Qualified Security Assessor", prov:"PCI SSC", col:"grc_audit", lvl:3, price:"~$ varies", req:true, url:"https://www.pcisecuritystandards.org/program_training_and_qualification/qualified_security_assessors/"},
+  {code:"CIA", full:"Certified Internal Auditor", prov:"IIA", col:"grc_audit", lvl:2, price:"~$ varies", req:false, url:"https://www.theiia.org/en/certifications/cia/"},
+  {code:"AAIA", full:"Advanced in AI Audit", prov:"ISACA", col:"grc_audit", lvl:3, price:"~$ varies", req:false, url:"https://www.isaca.org/credentialing/aaia"},
+  /* Privacy & Data Protection */
+  {code:"CIPP/E", full:"Certified Information Privacy Professional — Europe", prov:"IAPP", col:"grc_priv", lvl:2, price:"~$ varies", req:false, url:"https://iapp.org/certify/cippe/"},
+  {code:"CIPM", full:"Certified Information Privacy Manager", prov:"IAPP", col:"grc_priv", lvl:2, price:"~$ varies", req:false, url:"https://iapp.org/certify/cipm/"},
+  {code:"CIPT", full:"Certified Information Privacy Technologist", prov:"IAPP", col:"grc_priv", lvl:2, price:"~$ varies", req:false, url:"https://iapp.org/certify/cipt/"},
+  {code:"AIGP", full:"AI Governance Professional", prov:"IAPP", col:"grc_priv", lvl:2, price:"~$ varies", req:false, url:"https://iapp.org/certify/aigp/"},
+  {code:"CDPSE", full:"Certified Data Privacy Solutions Engineer", prov:"ISACA", col:"grc_priv", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/cdpse"},
+  {code:"GDPR DPO", full:"Certified Data Protection Officer (GDPR)", prov:"PECB", col:"grc_priv", lvl:2, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/gdpr"}
 ];
 
 /* ---- version stamp ---- */
 const today=new Date();
-const verStr="OffSec Roadmap v1.1 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" entries";
+const verStr="Security Cert Roadmap v2.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
 document.getElementById('footver').textContent=verStr;
 
 /* ---- build provider filter ---- */
@@ -454,14 +586,22 @@ const provSel=document.getElementById('prov');
 
 /* ---- render ---- */
 const chart=document.getElementById('chart');
+let activeTrack="offensive";
+
+function visibleColumns(){
+  return activeTrack==="all"?COLUMNS:COLUMNS.filter(c=>c.track===activeTrack);
+}
 function render(){
   chart.innerHTML="";
+  const cols=visibleColumns();
+  // adaptive width: fit small tracks without scrolling, scroll for big ones
+  chart.style.setProperty('--chart-min',Math.max(0,cols.length*162+44)+"px");
   // axis
   const axis=document.createElement('div');axis.className="axis";
   LEVELS.forEach(l=>{const d=document.createElement('div');d.className="lvl";d.textContent=l;axis.appendChild(d);});
   chart.appendChild(axis);
 
-  COLUMNS.forEach(col=>{
+  cols.forEach(col=>{
     const c=document.createElement('div');c.className="col";
     const head=document.createElement('div');head.className="col-head";
     head.style.background="var(--"+col.id+")";head.style.borderBottomColor="var(--"+col.id+"-dk)";
@@ -477,7 +617,38 @@ function render(){
     }
     chart.appendChild(c);
   });
+  renderLegend(cols);
+  // Pro Labs section is offensive-only
+  const ranges=document.querySelector('.ranges');
+  if(ranges)ranges.style.display=(activeTrack==="offensive"||activeTrack==="all")?"":"none";
   applyFilter();
+}
+
+/* ---- track switcher + dynamic legend ---- */
+function renderTracks(){
+  const wrap=document.getElementById('tracks');if(!wrap)return;wrap.innerHTML="";
+  TRACKS.forEach(t=>{
+    const b=document.createElement('button');
+    b.className="track-btn"+(t.id===activeTrack?" on":"");
+    b.textContent=t.label;b.dataset.track=t.id;
+    b.addEventListener('click',()=>{
+      activeTrack=t.id;
+      document.querySelectorAll('.track-btn').forEach(x=>x.classList.toggle('on',x.dataset.track===t.id));
+      const tb=document.getElementById('trackBlurb');if(tb)tb.textContent=t.blurb;
+      render();
+    });
+    wrap.appendChild(b);
+  });
+  const tb=document.getElementById('trackBlurb');
+  const cur=TRACKS.find(t=>t.id===activeTrack);if(tb&&cur)tb.textContent=cur.blurb;
+}
+function renderLegend(cols){
+  const wrap=document.getElementById('legend');if(!wrap)return;
+  let html='<span class="lvlkey">Levels:&nbsp; <b>Foundational</b> → <b>Intermediate</b> → <b>Advanced</b> → <b>Expert</b></span>';
+  cols.forEach(col=>{
+    html+='<span class="grp"><span class="sw" style="background:var(--'+col.id+')"></span>'+col.label+'</span>';
+  });
+  wrap.innerHTML=html;
 }
 
 function makeCert(x,colid,lvl,idx){
@@ -519,7 +690,7 @@ function applyFilter(){
     el.classList.toggle('dim',!ok);
     if(ok)shown++;
   });
-  countEl.textContent=shown+" / "+CERTS.length+" shown";
+  countEl.textContent=shown+" / "+document.querySelectorAll('.cert').length+" in view";
 }
 [q,provSel,reqOnly].forEach(el=>el.addEventListener('input',applyFilter));
 
@@ -535,6 +706,7 @@ document.getElementById('notes').innerHTML=
   '<b>Cloud red team</b> is the fastest-moving area — Pwned Labs (MCRTP/ACRTP/GCRTP → M-CRTP3), HackTricks Training '+
   '(ARTE/AzRTE/GRTE → Cloud RTE) and CyberWarFare Labs (MCRTA/CHMRTS) are all hands-on, identity-driven, and current.';
 
+renderTracks();
 render();
 
 /* =========================================================================
