@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Offensive Security Certification Roadmap</title>
+<title>Security & AI Certification Roadmap</title>
+<meta name="description" content="Interactive, audience-segmented map of security and AI certifications — offensive, defensive, cloud, GRC tracks plus a standalone AI credential landscape and HTB Pro Labs.">
+<meta property="og:title" content="Security & AI Certification Roadmap">
+<meta property="og:description" content="Pick a track — Offensive, Defensive, Cloud & Architecture, GRC, or the AI landscape — and explore current certs with prices, levels and links.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -139,8 +142,6 @@
   .cert.tipdown .tip{bottom:auto;top:calc(100% + 8px)}
   .cert.tipdown .tip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#0b0e13}
 
-  .dim{opacity:.16;filter:grayscale(.6)}
-
   /* ---------- Pro Labs & Cyber Ranges ---------- */
   :root{ --htb:#9fef00; --htb-dk:#6fae00; --hs:#ff7a59; --hs-dk:#c9543a; --vl:#3ac0e8; --vl-dk:#1d8cae; }
   .ranges{padding:26px 22px 6px;border-top:1px solid var(--line);margin-top:22px;
@@ -217,6 +218,36 @@
   .track-blurb{margin:10px 0 0;font-size:12.5px;color:var(--ink-dim);line-height:1.5;max-width:80ch}
   .track-blurb b{color:var(--ink)}
 
+  /* ---------- Top-level mode switch (Security ⇄ AI) & AI colours ---------- */
+  :root{
+    --ai_found:#7c4dff; --ai_found-dk:#5a2fc4;
+    --ai_eng:#1f8fb0;   --ai_eng-dk:#136178;
+    --ai_gen:#c0249a;   --ai_gen-dk:#7d1264;
+    --ai_sec:#c6473a;   --ai_sec-dk:#8c2a20;
+    --ai_gov:#2f8f4e;   --ai_gov-dk:#1f6b39;
+    --ai_biz:#e0871e;   --ai_biz-dk:#a8640f;
+    --ai-accent:#a06bff;
+  }
+  .modes{display:flex;gap:8px;margin:18px 0 4px;padding:5px;border-radius:12px;
+    background:var(--panel-2);border:1px solid var(--line);width:max-content;max-width:100%}
+  .mode-btn{display:flex;align-items:center;gap:8px;background:transparent;border:0;cursor:pointer;
+    color:var(--ink-dim);font-family:"Archivo",sans-serif;font-weight:700;font-size:14px;
+    padding:10px 18px;border-radius:9px;letter-spacing:.2px;transition:all .14s}
+  .mode-btn:hover{color:var(--ink)}
+  .mode-btn.on{color:#0e1116;background:var(--accent)}
+  .mode-btn.ai.on{background:var(--ai-accent);color:#0e1116}
+  .mode-btn .dot{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.7}
+
+  /* AI section reuses .chart/.col/.band/.cert; accent its hero tint */
+  #aisection{display:none}
+  #aisection .hero-ai{padding:24px 22px 4px;border-top:1px solid var(--line);
+    background:radial-gradient(900px 240px at 50% -40%, rgba(160,107,255,.10), transparent 62%)}
+  #aisection h2{font-family:"Archivo",sans-serif;font-weight:800;letter-spacing:-.4px;
+    font-size:clamp(19px,3vw,30px);margin:0}
+  #aisection h2 .acc{color:var(--ai-accent)}
+  #aisection .sub{margin:9px 0 0;color:var(--ink-dim);max-width:82ch;font-size:13.5px;line-height:1.55}
+  #aisection .sub b{color:var(--ink)}
+
   /* note strip */
   .notes{padding:8px 22px 4px;color:var(--ink-dim);font-size:12px;line-height:1.5}
   .notes b{color:var(--ink)}
@@ -245,18 +276,20 @@
 </head>
 <body>
 <header class="hero">
-  <h1>Security <span class="acc">Certification Roadmap</span></h1>
-  <p class="sub">A current map of security trainings &amp; certifications, organised by domain (columns) and proficiency
+  <h1 id="heroTitle">Security <span class="acc">Certification Roadmap</span></h1>
+  <p class="sub" id="heroSub">A current map of security trainings &amp; certifications, organised by domain (columns) and proficiency
   (rows). Pick a <b>track</b> below to see only the certs relevant to that audience — so a CISO isn't wading through
   hacking certs, and a red teamer isn't scrolling past audit credentials. Hover any box for the provider, full name,
   approximate cost and whether a course is required; click to open the official page. Offensive-first and deep, with
   the other domains layered in. Inspired by Paul Jeremy's <code>Security Certification Roadmap</code>, rebuilt
   data-driven and audience-segmented.</p>
 
+  <div class="modes" id="modes"></div>
+
   <div class="tracks" id="tracks"></div>
   <p class="track-blurb" id="trackBlurb"></p>
 
-  <div class="controls">
+  <div class="controls" id="secControls">
     <input type="search" id="q" placeholder="Search cert or provider, e.g. OSCP, CISSP, GIAC…" autocomplete="off">
     <select id="prov"><option value="">All providers</option></select>
     <label class="pill" id="reqPill"><input type="checkbox" id="reqOnly"> Course required only</label>
@@ -266,7 +299,7 @@
   <div class="legend" id="legend"></div>
 </header>
 
-<div class="scrollwrap">
+<div class="scrollwrap" id="secChartWrap">
   <div class="chart" id="chart"></div>
 </div>
 
@@ -302,6 +335,28 @@
 </section>
 
 <div class="notes" id="notes"></div>
+
+<section id="aisection">
+  <div class="hero-ai">
+    <div class="tracks" id="aitracks"></div>
+    <p class="track-blurb" id="aiBlurb"></p>
+
+    <div class="controls" id="aiControls">
+      <input type="search" id="aiq" placeholder="Search AI cert or provider, e.g. NVIDIA, AIGP, RAG, ISO 42001…" autocomplete="off">
+      <select id="aiprov"><option value="">All providers</option></select>
+      <label class="pill" id="aiReqPill"><input type="checkbox" id="aiReq"> Course/path required only</label>
+      <span class="count" id="aiCount"></span>
+    </div>
+
+    <div class="legend" id="aiLegend"></div>
+  </div>
+
+  <div class="scrollwrap" id="aiChartWrap">
+    <div class="chart" id="aichart"></div>
+  </div>
+
+  <div class="notes" id="aiNotes"></div>
+</section>
 
 <footer>
   <div class="ver" id="footver"></div>
@@ -636,7 +691,7 @@ function renderTracks(){
     b.textContent=t.label;b.dataset.track=t.id;
     b.addEventListener('click',()=>{
       activeTrack=t.id;
-      document.querySelectorAll('.track-btn').forEach(x=>x.classList.toggle('on',x.dataset.track===t.id));
+      document.querySelectorAll('#tracks .track-btn').forEach(x=>x.classList.toggle('on',x.dataset.track===t.id));
       const tb=document.getElementById('trackBlurb');if(tb)tb.textContent=t.blurb;
       render();
     });
@@ -686,7 +741,7 @@ function applyFilter(){
   reqPill.classList.toggle('on',ro);
   const active=!!(term||prov||ro);
   let shown=0;
-  document.querySelectorAll('.cert').forEach(el=>{
+  document.querySelectorAll('#chart .cert').forEach(el=>{
     let ok=true;
     if(term && !el.dataset.search.includes(term))ok=false;
     if(prov && !el.dataset.prov.toLowerCase().includes(prov))ok=false;
@@ -695,11 +750,11 @@ function applyFilter(){
     if(ok)shown++;
   });
   // collapse columns that have no visible cert while a filter is active
-  document.querySelectorAll('.col').forEach(col=>{
+  document.querySelectorAll('#chart .col').forEach(col=>{
     const has=[...col.querySelectorAll('.cert')].some(c=>c.style.display!=="none");
     col.style.display=(active&&!has)?"none":"";
   });
-  const total=document.querySelectorAll('.cert').length;
+  const total=document.querySelectorAll('#chart .cert').length;
   countEl.textContent=active?(shown+" / "+total+" match"):(total+" in view");
 }
 [q,provSel,reqOnly].forEach(el=>{el.addEventListener('input',applyFilter);el.addEventListener('change',applyFilter);});
@@ -833,6 +888,214 @@ function renderEnterprise(){
 }
 renderLabs();
 renderEnterprise();
+
+/* =========================================================================
+   AI TRAININGS & CERTIFICATIONS  — fully separate map. Edit AI_CERTS below.
+   col : ai_found | ai_eng | ai_gen | ai_sec | ai_gov | ai_biz
+   lvl : 1 Foundational | 2 Intermediate | 3 Advanced | 4 Expert
+   req : true = vendor course / learning path required (incl. "certificate of completion")
+   ========================================================================= */
+const AI_CATS = [
+  {id:"all",      label:"All AI"},
+  {id:"ai_found", label:"Foundations & Literacy"},
+  {id:"ai_eng",   label:"ML / AI Engineering"},
+  {id:"ai_gen",   label:"Generative AI & LLMs"},
+  {id:"ai_sec",   label:"AI Security & Red Team"},
+  {id:"ai_gov",   label:"Governance & Ethics"},
+  {id:"ai_biz",   label:"Product & Leadership"}
+];
+const AI_COLUMNS = [
+  {id:"ai_found", label:"Foundations & AI Literacy"},
+  {id:"ai_eng",   label:"ML / AI Engineering & Data Science"},
+  {id:"ai_gen",   label:"Generative AI & LLMs"},
+  {id:"ai_sec",   label:"AI Security & Red Teaming"},
+  {id:"ai_gov",   label:"Governance, Ethics, Risk & Compliance"},
+  {id:"ai_biz",   label:"Product, Business & Leadership"}
+];
+const AI_CERTS = [
+  /* ---- Foundations & AI Literacy ---- */
+  {code:"AI for Everyone", full:"AI for Everyone (Andrew Ng)", prov:"DeepLearning.AI", col:"ai_found", lvl:1, price:"free / audit", req:true, url:"https://www.coursera.org/learn/ai-for-everyone"},
+  {code:"Google AI Essentials", full:"Google AI Essentials", prov:"Google", col:"ai_found", lvl:1, price:"~$49/mo", req:true, url:"https://grow.google/ai-essentials/"},
+  {code:"AWS AIF-C01", full:"AWS Certified AI Practitioner", prov:"Amazon AWS", col:"ai_found", lvl:1, price:"~$100", req:false, url:"https://aws.amazon.com/certification/certified-ai-practitioner/"},
+  {code:"AI-900 → AI-901", full:"Azure AI Fundamentals (AI-900 retires Jun 2026 → AI-901)", prov:"Microsoft", col:"ai_found", lvl:1, price:"~$99", req:false, url:"https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/"},
+  {code:"BCS AI Essentials", full:"BCS Essentials Certificate in Artificial Intelligence", prov:"BCS", col:"ai_found", lvl:1, price:"~$ varies", req:false, url:"https://www.bcs.org/qualifications-and-certifications/certifications-for-professionals/artificial-intelligence-certifications/"},
+  {code:"AIBIZ", full:"AIBIZ — AI for Business (literacy)", prov:"CertNexus", col:"ai_found", lvl:1, price:"~$ varies", req:false, url:"https://certnexus.com/certification/aibiz/"},
+  {code:"IBM AI Foundations", full:"IBM AI Foundations for Everyone", prov:"IBM", col:"ai_found", lvl:1, price:"certificate", req:true, url:"https://www.coursera.org/specializations/ai-foundations-for-everyone"},
+  {code:"Elements of AI", full:"Elements of AI", prov:"Univ. of Helsinki / MinnaLearn", col:"ai_found", lvl:1, price:"free", req:true, url:"https://www.elementsofai.com/"},
+
+  /* ---- ML / AI Engineering & Data Science ---- */
+  {code:"TF Developer", full:"TensorFlow Developer Certificate", prov:"Google / TensorFlow", col:"ai_eng", lvl:2, price:"~$100", req:false, url:"https://www.tensorflow.org/certificate"},
+  {code:"AWS MLA-C01", full:"AWS Certified Machine Learning Engineer – Associate", prov:"Amazon AWS", col:"ai_eng", lvl:2, price:"~$150", req:false, url:"https://aws.amazon.com/certification/certified-machine-learning-engineer-associate/"},
+  {code:"AWS MLS-C01", full:"AWS ML – Specialty (retires Mar 2026)", prov:"Amazon AWS", col:"ai_eng", lvl:3, price:"~$300", req:false, url:"https://aws.amazon.com/certification/certified-machine-learning-specialty/"},
+  {code:"AI-102", full:"Azure AI Engineer Associate", prov:"Microsoft", col:"ai_eng", lvl:2, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/azure-ai-engineer/"},
+  {code:"DP-100", full:"Azure Data Scientist Associate", prov:"Microsoft", col:"ai_eng", lvl:2, price:"~$165", req:false, url:"https://learn.microsoft.com/credentials/certifications/azure-data-scientist/"},
+  {code:"GCP PMLE", full:"Google Professional Machine Learning Engineer", prov:"Google Cloud", col:"ai_eng", lvl:3, price:"~$200", req:false, url:"https://cloud.google.com/learn/certification/machine-learning-engineer"},
+  {code:"Databricks ML Assoc", full:"Databricks Certified ML Associate", prov:"Databricks", col:"ai_eng", lvl:2, price:"~$200", req:false, url:"https://www.databricks.com/learn/certification/machine-learning-associate"},
+  {code:"Databricks ML Pro", full:"Databricks Certified ML Professional", prov:"Databricks", col:"ai_eng", lvl:3, price:"~$200", req:false, url:"https://www.databricks.com/learn/certification/machine-learning-professional"},
+  {code:"CAIP", full:"Certified Artificial Intelligence Practitioner", prov:"CertNexus", col:"ai_eng", lvl:2, price:"~$ varies", req:false, url:"https://certnexus.com/certification/certified-artificial-intelligence-practitioner/"},
+  {code:"IBM AI Engineering", full:"IBM AI Engineering Professional Certificate", prov:"IBM", col:"ai_eng", lvl:2, price:"certificate", req:true, url:"https://www.coursera.org/professional-certificates/ai-engineer"},
+  {code:"ML Specialization", full:"Machine Learning Specialization (Andrew Ng)", prov:"DeepLearning.AI / Stanford", col:"ai_eng", lvl:2, price:"certificate", req:true, url:"https://www.coursera.org/specializations/machine-learning-introduction"},
+  {code:"DL Specialization", full:"Deep Learning Specialization", prov:"DeepLearning.AI", col:"ai_eng", lvl:3, price:"certificate", req:true, url:"https://www.coursera.org/specializations/deep-learning"},
+  {code:"AiE", full:"Artificial Intelligence Engineer", prov:"USAII", col:"ai_eng", lvl:3, price:"~$ varies", req:false, url:"https://www.usaii.org/ai-certifications/certified-artificial-intelligence-engineer"},
+
+  /* ---- Generative AI & LLMs ---- */
+  {code:"NCA-GENL", full:"NVIDIA-Certified Associate: Generative AI LLMs", prov:"NVIDIA", col:"ai_gen", lvl:2, price:"~$135", req:false, url:"https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate/"},
+  {code:"NCP-GENL", full:"NVIDIA-Certified Professional: Generative AI LLMs", prov:"NVIDIA", col:"ai_gen", lvl:3, price:"~$200", req:false, url:"https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-professional/"},
+  {code:"NCA-GENM", full:"NVIDIA-Certified Associate: Generative AI Multimodal", prov:"NVIDIA", col:"ai_gen", lvl:2, price:"~$135", req:false, url:"https://www.nvidia.com/en-us/learn/certification/"},
+  {code:"Databricks GenAI", full:"Databricks Certified Generative AI Engineer Associate", prov:"Databricks", col:"ai_gen", lvl:2, price:"~$200", req:false, url:"https://www.databricks.com/learn/certification/genai-engineer-associate"},
+  {code:"AWS GenAI Dev Pro", full:"AWS Certified Generative AI Developer – Professional", prov:"Amazon AWS", col:"ai_gen", lvl:3, price:"~$300", req:false, url:"https://aws.amazon.com/certification/"},
+  {code:"IBM GenAI Eng", full:"IBM Generative AI Engineering Professional Certificate", prov:"IBM", col:"ai_gen", lvl:2, price:"certificate", req:true, url:"https://www.coursera.org/professional-certificates/ibm-generative-ai-engineering"},
+  {code:"HF Course", full:"Hugging Face LLM / Agents Course", prov:"Hugging Face", col:"ai_gen", lvl:2, price:"free", req:true, url:"https://huggingface.co/learn"},
+  {code:"LangChain Academy", full:"LangChain Academy (agents / LangGraph)", prov:"LangChain", col:"ai_gen", lvl:2, price:"free", req:true, url:"https://academy.langchain.com/"},
+  {code:"Anthropic Academy", full:"Anthropic Academy — Claude / building with LLMs", prov:"Anthropic", col:"ai_gen", lvl:1, price:"free", req:true, url:"https://www.anthropic.com/learn"},
+  {code:"Claude Cert. Architect", full:"Claude Certified Architect, Foundations (Partner Network)", prov:"Anthropic", col:"ai_gen", lvl:3, price:"partner-only", req:true, url:"https://www.anthropic.com/partners"},
+  {code:"GCP GenAI Path", full:"Google Cloud Generative AI Learning Path (skill badges)", prov:"Google Cloud", col:"ai_gen", lvl:2, price:"badges", req:true, url:"https://www.cloudskillsboost.google/paths/118"},
+  {code:"Prompt Eng (Vanderbilt)", full:"Prompt Engineering for ChatGPT", prov:"Vanderbilt / Coursera", col:"ai_gen", lvl:1, price:"certificate", req:true, url:"https://www.coursera.org/learn/prompt-engineering"},
+
+  /* ---- AI Security & Red Teaming (mirrors the security roadmap's AI column) ---- */
+  {code:"OSAI / OSAI+", full:"OffSec AI Red Teamer (AI-300)", prov:"OffSec", col:"ai_sec", lvl:3, price:"~$1,749 bundle", req:true, url:"https://www.offsec.com/courses/ai-300/"},
+  {code:"HTB COAE", full:"HTB Certified Offensive AI Expert", prov:"Hack The Box", col:"ai_sec", lvl:3, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications"},
+  {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai_sec", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
+  {code:"COASP", full:"Certified Offensive AI Security Professional", prov:"EC-Council", col:"ai_sec", lvl:2, price:"~$ varies", req:true, url:"https://www.eccouncil.org/ai-courses/certified-offensive-ai-security-professional-coasp/"},
+  {code:"AIRTP+", full:"AI Red Teaming Professional", prov:"Learn Prompting", col:"ai_sec", lvl:2, price:"~$ varies", req:true, url:"https://learnprompting.org/certificates/ai-red-teaming-professional-certification"},
+  {code:"CAIPT-RT", full:"Certified AI Penetration Tester – Red Team", prov:"Tonex", col:"ai_sec", lvl:3, price:"~$ varies", req:true, url:"https://www.tonex.com/training-courses/certified-ai-penetration-tester-red-team-caipt-rt/"},
+  {code:"GASAE", full:"GIAC AI Security Automation Engineer", prov:"GIAC / SANS", col:"ai_sec", lvl:3, price:"~$999", req:false, url:"https://www.giac.org/certifications/"},
+  {code:"AAISM", full:"ISACA Advanced in AI Security Management", prov:"ISACA", col:"ai_sec", lvl:3, price:"~$ varies", req:false, url:"https://www.isaca.org/credentialing/aaism"},
+
+  /* ---- Governance, Ethics, Risk & Compliance ---- */
+  {code:"AIGP", full:"AI Governance Professional", prov:"IAPP", col:"ai_gov", lvl:2, price:"~$ varies", req:false, url:"https://iapp.org/certify/aigp/"},
+  {code:"AAIA", full:"ISACA Advanced in AI Audit", prov:"ISACA", col:"ai_gov", lvl:3, price:"~$ varies", req:false, url:"https://www.isaca.org/credentialing/aaia"},
+  {code:"42001 Foundation", full:"ISO/IEC 42001 Foundation (AI Management Systems)", prov:"PECB", col:"ai_gov", lvl:1, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-42001"},
+  {code:"42001 Lead Impl.", full:"ISO/IEC 42001 Lead Implementer", prov:"PECB", col:"ai_gov", lvl:2, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-42001"},
+  {code:"42001 Lead Auditor", full:"ISO/IEC 42001 Lead Auditor", prov:"PECB", col:"ai_gov", lvl:3, price:"~$ varies", req:true, url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-42001"},
+  {code:"NIST AI RMF", full:"NIST AI Risk Management Framework (training)", prov:"NIST / various", col:"ai_gov", lvl:2, price:"framework", req:false, url:"https://www.nist.gov/itl/ai-risk-management-framework"},
+  {code:"CEET", full:"Certified Ethical Emerging Technologist", prov:"CertNexus", col:"ai_gov", lvl:2, price:"~$ varies", req:false, url:"https://certnexus.com/certification/certified-ethical-emerging-technologist/"},
+  {code:"CDPSE", full:"Certified Data Privacy Solutions Engineer", prov:"ISACA", col:"ai_gov", lvl:2, price:"~$575", req:false, url:"https://www.isaca.org/credentialing/cdpse"},
+
+  /* ---- Product, Business & Leadership ---- */
+  {code:"GenAI Leader", full:"Google Cloud Generative AI Leader", prov:"Google Cloud", col:"ai_biz", lvl:1, price:"~$99", req:false, url:"https://cloud.google.com/learn/certification/generative-ai-leader"},
+  {code:"CPMAI", full:"Cognitive Project Management for AI (CPMAI v7)", prov:"PMI / Cognilytica", col:"ai_biz", lvl:2, price:"~$ varies", req:true, url:"https://www.pmi.org/shop/p-/elearning/cpmai/cpmai"},
+  {code:"AI for Business", full:"AI for Business Specialization", prov:"Wharton / Coursera", col:"ai_biz", lvl:2, price:"certificate", req:true, url:"https://www.coursera.org/specializations/ai-for-business-wharton"},
+  {code:"MIT AI Strategy", full:"AI: Implications for Business Strategy", prov:"MIT Sloan", col:"ai_biz", lvl:3, price:"~$ exec", req:true, url:"https://executive.mit.edu/course/artificial-intelligence/"},
+  {code:"Oxford AI Prog.", full:"Oxford Artificial Intelligence Programme", prov:"Oxford Saïd / GetSmarter", col:"ai_biz", lvl:3, price:"~$ exec", req:true, url:"https://www.sbs.ox.ac.uk/programmes/executive-education/online-programmes/oxford-artificial-intelligence-programme"},
+  {code:"Duke AI PM", full:"AI Product Management Specialization", prov:"Duke / Coursera", col:"ai_biz", lvl:2, price:"certificate", req:true, url:"https://www.coursera.org/specializations/ai-product-management-duke"},
+  {code:"MS AI Business", full:"Microsoft AI Business School", prov:"Microsoft", col:"ai_biz", lvl:1, price:"free", req:true, url:"https://www.microsoft.com/en-us/ai/ai-business-school"}
+];
+
+/* ---- AI map render (reuses makeCert + .chart/.col/.band/.cert) ---- */
+let activeAICat="all";
+const aichart=document.getElementById('aichart');
+function visibleAICols(){return activeAICat==="all"?AI_COLUMNS:AI_COLUMNS.filter(c=>c.id===activeAICat);}
+function renderAI(){
+  if(!aichart)return;aichart.innerHTML="";
+  const cols=visibleAICols();
+  aichart.style.setProperty('--chart-min',Math.max(0,cols.length*168+44)+"px");
+  const axis=document.createElement('div');axis.className="axis";
+  LEVELS.forEach(l=>{const d=document.createElement('div');d.className="lvl";d.textContent=l;axis.appendChild(d);});
+  aichart.appendChild(axis);
+  cols.forEach(col=>{
+    const c=document.createElement('div');c.className="col";
+    const head=document.createElement('div');head.className="col-head";
+    head.style.background="var(--"+col.id+")";head.style.borderBottomColor="var(--"+col.id+"-dk)";
+    head.textContent=col.label;c.appendChild(head);
+    for(let lvl=1;lvl<=4;lvl++){
+      const band=document.createElement('div');band.className="band";band.dataset.lvl=LEVELS[lvl-1];
+      band.style.setProperty('--bandtint',lvl%2?'rgba(255,255,255,.012)':'transparent');
+      const items=AI_CERTS.filter(x=>x.col===col.id&&x.lvl===lvl);
+      if(items.length===0){band.classList.add('empty');band.innerHTML="<span>·</span>";}
+      items.forEach((x,i)=>band.appendChild(makeCert(x,col.id,lvl,i)));
+      c.appendChild(band);
+    }
+    aichart.appendChild(c);
+  });
+  renderAILegend(cols);
+  applyAIFilter();
+}
+function renderAITracks(){
+  const wrap=document.getElementById('aitracks');if(!wrap)return;wrap.innerHTML="";
+  AI_CATS.forEach(t=>{
+    const b=document.createElement('button');b.className="track-btn"+(t.id===activeAICat?" on":"");
+    b.textContent=t.label;b.dataset.cat=t.id;
+    b.addEventListener('click',()=>{
+      activeAICat=t.id;
+      document.querySelectorAll('#aitracks .track-btn').forEach(x=>x.classList.toggle('on',x.dataset.cat===t.id));
+      renderAI();
+    });
+    wrap.appendChild(b);
+  });
+}
+function renderAILegend(cols){
+  const wrap=document.getElementById('aiLegend');if(!wrap)return;
+  let html='<span class="lvlkey">Levels:&nbsp; <b>Foundational</b> → <b>Intermediate</b> → <b>Advanced</b> → <b>Expert</b></span>';
+  cols.forEach(col=>{html+='<span class="grp"><span class="sw" style="background:var(--'+col.id+')"></span>'+col.label+'</span>';});
+  wrap.innerHTML=html;
+}
+/* AI provider dropdown (split multi-provider names) */
+const aiProvSel=document.getElementById('aiprov');
+if(aiProvSel){
+  const s=new Set();AI_CERTS.forEach(c=>c.prov.split(" / ").forEach(p=>s.add(p.trim())));
+  [...s].sort((a,b)=>a.localeCompare(b)).forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;aiProvSel.appendChild(o);});
+}
+const aiq=document.getElementById('aiq'),aiReq=document.getElementById('aiReq'),
+      aiCount=document.getElementById('aiCount'),aiReqPill=document.getElementById('aiReqPill');
+function applyAIFilter(){
+  if(!aiq)return;
+  const term=aiq.value.trim().toLowerCase();const prov=aiProvSel.value.toLowerCase();const ro=aiReq.checked;
+  aiReqPill.classList.toggle('on',ro);
+  const activeF=!!(term||prov||ro);let shown=0;
+  document.querySelectorAll('#aichart .cert').forEach(el=>{
+    let ok=true;
+    if(term && !el.dataset.search.includes(term))ok=false;
+    if(prov && !el.dataset.prov.toLowerCase().includes(prov))ok=false;
+    if(ro && el.dataset.req!=="true")ok=false;
+    el.style.display=ok?"":"none";if(ok)shown++;
+  });
+  document.querySelectorAll('#aichart .col').forEach(col=>{
+    const has=[...col.querySelectorAll('.cert')].some(c=>c.style.display!=="none");
+    col.style.display=(activeF&&!has)?"none":"";
+  });
+  const total=document.querySelectorAll('#aichart .cert').length;
+  aiCount.textContent=activeF?(shown+" / "+total+" match"):(total+" AI entries");
+}
+if(aiq)[aiq,aiProvSel,aiReq].forEach(el=>{el.addEventListener('input',applyAIFilter);el.addEventListener('change',applyAIFilter);});
+
+/* ---- AI notes ---- */
+(function(){const n=document.getElementById('aiNotes');if(n)n.innerHTML=
+  '<b>Reading the AI map:</b> ● = a vendor course / learning path is required (this includes Coursera/edX "professional '+
+  'certificates" and free paths that issue a certificate of completion) · ○ = a standalone proctored exam. '+
+  '<b>Fast-moving:</b> AWS ML–Specialty retires Mar 2026 (use MLE–Associate); Azure AI-900 retires Jun 2026 (→ AI-901). '+
+  'DeepLearning.AI/Coursera items are learning credentials, not proctored exams. <b>AI Security</b> overlaps the security '+
+  'roadmap on purpose — those same certs appear under Offensive ▸ AI there.';})();
+
+/* =========================================================================
+   TOP-LEVEL MODE SWITCH  (Security  vs  AI)
+   ========================================================================= */
+const MODES=[{id:"security",label:"Security Certifications"},{id:"ai",label:"AI Certifications"}];
+let activeMode="security";
+const SEC_ELS=["#tracks","#trackBlurb","#secControls","#legend","#secChartWrap","#notes"];
+function setMode(m){
+  activeMode=m;
+  document.querySelectorAll('#modes .mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  const showSec=m==="security";
+  SEC_ELS.forEach(sel=>{const el=document.querySelector(sel);if(el)el.style.display=showSec?"":"none";});
+  const ranges=document.querySelector('.ranges');
+  if(ranges)ranges.style.display=(showSec&&(activeTrack==="offensive"||activeTrack==="all"))?"":"none";
+  const ai=document.getElementById('aisection');if(ai)ai.style.display=showSec?"none":"block";
+  // adapt the single hero heading + intro so the page always reads coherently
+  const ht=document.getElementById('heroTitle'),hs=document.getElementById('heroSub');
+  if(ht)ht.innerHTML=showSec?'Security <span class="acc">Certification Roadmap</span>':'AI <span class="acc" style="color:var(--ai-accent)">Certification Roadmap</span>';
+  if(hs)hs.innerHTML=showSec
+    ?'A current map of security trainings &amp; certifications, organised by domain (columns) and proficiency (rows). Pick a <b>track</b> below to see only the certs relevant to that audience. Hover any box for provider, full name, approximate cost and whether a course is required; click to open the official page.'
+    :'A standalone, deliberately <b>broad</b> map of the AI credential landscape — not just headline certs but vendor exams, cloud role certs, governance credentials, MOOC professional certificates and free learning paths. Pick a focus below, or search. Many entries are <b>certificates of completion / learning paths</b> rather than proctored exams — see each tooltip\'s course flag.';
+  if(!showSec && aichart && !aichart.children.length){renderAITracks();renderAI();}
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+(function(){const wrap=document.getElementById('modes');if(!wrap)return;
+  MODES.forEach(m=>{const b=document.createElement('button');
+    b.className="mode-btn"+(m.id==="ai"?" ai":"")+(m.id===activeMode?" on":"");
+    b.dataset.mode=m.id;b.innerHTML='<span class="dot"></span>'+m.label;
+    b.addEventListener('click',()=>setMode(m.id));wrap.appendChild(b);});
+})();
 </script>
 </body>
 </html>
