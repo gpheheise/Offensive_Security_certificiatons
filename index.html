@@ -362,6 +362,7 @@ const CERTS = [
   {code:"HTB CJCA", full:"Certified Junior Cybersecurity Associate", prov:"Hack The Box", col:"general", lvl:1, price:"~$90", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-junior-cybersecurity-associate"},
   {code:"PJPT", full:"Practical Junior Penetration Tester", prov:"TCM Security", col:"general", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/pjpt/"},
   {code:"PenTest+", full:"CompTIA PenTest+", prov:"CompTIA", col:"general", lvl:1, price:"~$439", req:false, url:"https://www.comptia.org/certifications/pentest"},
+  {code:"KLCP", full:"Kali Linux Certified Professional (PEN-103, free course)", prov:"OffSec", col:"general", lvl:1, price:"~$150 exam", req:false, url:"https://www.offsec.com/courses/pen-103/"},
   {code:"CEH", full:"Certified Ethical Hacker", prov:"EC-Council", col:"general", lvl:1, price:"~$1,199", req:true, url:"https://www.eccouncil.org/train-certify/certified-ethical-hacker-ceh/"},
   {code:"eCPPT", full:"Certified Professional Penetration Tester", prov:"INE Security", col:"general", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security/certifications/ecppt-certification"},
   {code:"HTB CPTS", full:"Certified Penetration Testing Specialist", prov:"Hack The Box", col:"general", lvl:2, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-penetration-testing-specialist"},
@@ -457,7 +458,7 @@ const CERTS = [
 
   /* ---------------- AI / ML OFFENSIVE ---------------- */
   {code:"Offensive AI", full:"Generative AI for Pentesters (eJPT path module)", prov:"INE Security", col:"ai", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
-  {code:"HTB AI RT", full:"AI Red Teamer (job-role path, w/ Google)", prov:"Hack The Box", col:"ai", lvl:2, price:"~$ (sub)", req:true, url:"https://academy.hackthebox.com/"},
+  {code:"HTB COAE", full:"Certified Offensive AI Expert (AI Red Teamer path, w/ Google)", prov:"Hack The Box", col:"ai", lvl:3, price:"~$210 (2 attempts)", req:true, url:"https://academy.hackthebox.com/preview/certifications"},
   {code:"AIRTP+", full:"AI Red Teaming Professional", prov:"Learn Prompting", col:"ai", lvl:2, price:"~$ varies", req:true, url:"https://learnprompting.org/certificates/ai-red-teaming-professional-certification"},
   {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
   {code:"COASP", full:"Certified Offensive AI Security Professional", prov:"EC-Council", col:"ai", lvl:2, price:"~$ varies", req:true, url:"https://www.eccouncil.org/ai-courses/certified-offensive-ai-security-professional-coasp/"},
@@ -575,7 +576,7 @@ const CERTS = [
 
 /* ---- version stamp ---- */
 const today=new Date();
-const verStr="Security Cert Roadmap v2.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
+const verStr="Security Cert Roadmap v2.1 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
 document.getElementById('footver').textContent=verStr;
 
 /* ---- build provider filter (split "GIAC / SANS" etc. into individual options) ---- */
