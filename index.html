@@ -81,38 +81,41 @@
   .legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(255,255,255,.18)}
   .legend .lvlkey b{color:var(--ink);font-weight:600}
 
-  /* ---------- Chart ---------- */
+  /* ---------- Chart (CSS grid → every level row aligns across all columns + rail) ---------- */
   .scrollwrap{overflow-x:auto;padding:18px 14px 8px}
-  .chart{display:flex;gap:12px;min-width:var(--chart-min,1180px);align-items:stretch}
-  .axis{
-    flex:0 0 34px;display:flex;flex-direction:column;justify-content:space-between;
-    padding:54px 0 12px;position:sticky;left:0;z-index:7;background:var(--bg);
-  }
-  .axis .lvl{
+  .chart{display:grid;min-width:var(--chart-min,1180px);
+    grid-template-columns:34px repeat(var(--ncols,9), minmax(152px,1fr));
+    grid-template-rows:auto repeat(4,auto);gap:8px 12px}
+  /* left rail: spacer above headers + 4 level chips, sticky on horizontal scroll */
+  .axis-spacer{grid-column:1;grid-row:1;position:sticky;left:0;z-index:7;background:var(--bg)}
+  .chart>.lvl{
+    grid-column:1;position:sticky;left:0;z-index:7;min-height:62px;
     writing-mode:vertical-rl;transform:rotate(180deg);
     font-family:"Archivo",sans-serif;font-weight:800;font-size:11.5px;letter-spacing:1.6px;
-    text-transform:uppercase;text-align:center;flex:1;margin:0 5px 0 0;border-radius:6px;
+    text-transform:uppercase;text-align:center;border-radius:6px;margin-right:5px;
     display:flex;align-items:center;justify-content:center;color:#0e1116;
   }
-  .axis .lvl.lv1{background:var(--lvl1)}
-  .axis .lvl.lv2{background:var(--lvl2);color:#fff}
-  .axis .lvl.lv3{background:var(--lvl3)}
-  .axis .lvl.lv4{background:var(--lvl4);color:#fff}
-  .col{flex:1 1 0;min-width:152px;display:flex;flex-direction:column;gap:8px}
+  .chart>.lvl.lv1{grid-row:2;background:var(--lvl1)}
+  .chart>.lvl.lv2{grid-row:3;background:var(--lvl2);color:#fff}
+  .chart>.lvl.lv3{grid-row:4;background:var(--lvl3)}
+  .chart>.lvl.lv4{grid-row:5;background:var(--lvl4);color:#fff}
+  .col{display:contents}
   .col-head{
+    grid-column:var(--ci);grid-row:1;
     font-family:"Archivo",sans-serif;font-weight:700;font-size:12.5px;line-height:1.12;
     color:#fff;padding:8px 10px;border-radius:8px 8px 3px 3px;height:50px;overflow:hidden;
     display:flex;align-items:center;text-align:left;border-bottom:3px solid rgba(0,0,0,.3);
     position:sticky;top:0;z-index:5;
   }
   .band{
+    grid-column:var(--ci);
     background:var(--panel);border:1px solid var(--line);border-radius:7px;
-    padding:7px;display:flex;flex-direction:column;gap:6px;flex:1;
+    padding:7px;display:flex;flex-direction:column;gap:6px;
   }
-  .band.lv1{border-top:3px solid var(--lvl1);background-image:linear-gradient(rgba(58,155,84,.07),rgba(58,155,84,.07))}
-  .band.lv2{border-top:3px solid var(--lvl2);background-image:linear-gradient(rgba(47,111,176,.08),rgba(47,111,176,.08))}
-  .band.lv3{border-top:3px solid var(--lvl3);background-image:linear-gradient(rgba(224,135,30,.07),rgba(224,135,30,.07))}
-  .band.lv4{border-top:3px solid var(--lvl4);background-image:linear-gradient(rgba(198,71,58,.07),rgba(198,71,58,.07))}
+  .band.lv1{grid-row:2;border-top:3px solid var(--lvl1);background-image:linear-gradient(rgba(58,155,84,.07),rgba(58,155,84,.07))}
+  .band.lv2{grid-row:3;border-top:3px solid var(--lvl2);background-image:linear-gradient(rgba(47,111,176,.08),rgba(47,111,176,.08))}
+  .band.lv3{grid-row:4;border-top:3px solid var(--lvl3);background-image:linear-gradient(rgba(224,135,30,.07),rgba(224,135,30,.07))}
+  .band.lv4{grid-row:5;border-top:3px solid var(--lvl4);background-image:linear-gradient(rgba(198,71,58,.07),rgba(198,71,58,.07))}
   .band.empty{align-items:center;justify-content:center}
   .band.empty span{color:var(--line);font-size:18px;font-family:"IBM Plex Mono",monospace}
 
@@ -289,9 +292,10 @@
   /* ---------- Mobile ---------- */
   @media (max-width:860px){
     .scrollwrap{overflow-x:visible;padding:14px 12px}
-    .chart{flex-direction:column;min-width:0;gap:18px}
-    .axis{display:none}
-    .col{min-width:0}
+    .chart{display:block;min-width:0}
+    .axis-spacer,.chart>.lvl{display:none}
+    .col{display:block;margin-bottom:18px}
+    .col-head{position:static}
     .band{flex-direction:row;flex-wrap:wrap}
     .band::before{content:attr(data-lvl);flex-basis:100%;font-family:"Archivo";font-weight:700;
       font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim);margin-bottom:2px}
@@ -672,7 +676,7 @@ const CERTS = [
 
 /* ---- version stamp ---- */
 const today=new Date();
-const verStr="Security & AI Cert Roadmap v3.0 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
+const verStr="Security & AI Cert Roadmap v3.1 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
 document.getElementById('footver').textContent=verStr;
 
 /* ---- build provider filter (split "GIAC / SANS" etc. into individual options) ---- */
@@ -695,13 +699,13 @@ function render(){
   const cols=visibleColumns();
   // adaptive width: fit small tracks without scrolling, scroll for big ones
   chart.style.setProperty('--chart-min',Math.max(0,cols.length*162+44)+"px");
-  // axis
-  const axis=document.createElement('div');axis.className="axis";
-  LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;axis.appendChild(d);});
-  chart.appendChild(axis);
+  chart.style.setProperty('--ncols',cols.length);
+  // left rail: spacer (above headers) + 4 level chips, as DIRECT grid children
+  const sp=document.createElement('div');sp.className="axis-spacer";chart.appendChild(sp);
+  LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;chart.appendChild(d);});
 
-  cols.forEach(col=>{
-    const c=document.createElement('div');c.className="col";
+  cols.forEach((col,ci)=>{
+    const c=document.createElement('div');c.className="col";c.style.setProperty('--ci',ci+2);
     const head=document.createElement('div');head.className="col-head";
     head.style.background="var(--"+col.id+")";head.style.borderBottomColor="var(--"+col.id+"-dk)";
     head.textContent=col.label;c.appendChild(head);
@@ -793,11 +797,14 @@ function applyFilter(){
     el.style.display=ok?"":"none";          // hide non-matches, not just dim
     if(ok)shown++;
   });
-  // collapse columns that have no visible cert while a filter is active
+  // collapse empty columns AND renumber grid tracks so visible columns pack left
+  let vis=0;
   document.querySelectorAll('#chart .col').forEach(col=>{
     const has=[...col.querySelectorAll('.cert')].some(c=>c.style.display!=="none");
-    col.style.display=(active&&!has)?"none":"";
+    if(active&&!has){col.style.display="none";}
+    else{col.style.display="";col.style.setProperty('--ci',String((++vis)+1));}
   });
+  chart.style.setProperty('--ncols',String(vis));
   const total=document.querySelectorAll('#chart .cert').length;
   countEl.textContent=active?(shown+" / "+total+" match"):(total+" in view");
 }
@@ -845,9 +852,11 @@ function applyPathway(p){
     const tb=document.getElementById('trackBlurb'),cur=TRACKS.find(t=>t.id===p.track);if(tb&&cur)tb.textContent=cur.blurb;
     render();
   }
-  // spotlight
+  // spotlight — restore every column + full grid tracks first (a prior filter may have collapsed them)
   chart.querySelectorAll('.cert').forEach(c=>{c.style.display="";c.classList.remove('pw-on');const b=c.querySelector('.pw-badge');if(b)b.textContent="";});
-  chart.querySelectorAll('.col').forEach(col=>col.style.display="");
+  let vis=0;
+  chart.querySelectorAll('.col').forEach(col=>{col.style.display="";col.style.setProperty('--ci',String((++vis)+1));});
+  chart.style.setProperty('--ncols',String(vis));
   chart.classList.add('pw-active');
   const found=[];
   p.steps.forEach((code,i)=>{
@@ -1091,11 +1100,11 @@ function renderAI(){
   if(!aichart)return;aichart.innerHTML="";
   const cols=visibleAICols();
   aichart.style.setProperty('--chart-min',Math.max(0,cols.length*168+44)+"px");
-  const axis=document.createElement('div');axis.className="axis";
-  LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;axis.appendChild(d);});
-  aichart.appendChild(axis);
-  cols.forEach(col=>{
-    const c=document.createElement('div');c.className="col";
+  aichart.style.setProperty('--ncols',cols.length);
+  const sp=document.createElement('div');sp.className="axis-spacer";aichart.appendChild(sp);
+  LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;aichart.appendChild(d);});
+  cols.forEach((col,ci)=>{
+    const c=document.createElement('div');c.className="col";c.style.setProperty('--ci',ci+2);
     const head=document.createElement('div');head.className="col-head";
     head.style.background="var(--"+col.id+")";head.style.borderBottomColor="var(--"+col.id+"-dk)";
     head.textContent=col.label;c.appendChild(head);
@@ -1150,10 +1159,13 @@ function applyAIFilter(){
     if(ro && el.dataset.req!=="true")ok=false;
     el.style.display=ok?"":"none";if(ok)shown++;
   });
+  let vis=0;
   document.querySelectorAll('#aichart .col').forEach(col=>{
     const has=[...col.querySelectorAll('.cert')].some(c=>c.style.display!=="none");
-    col.style.display=(activeF&&!has)?"none":"";
+    if(activeF&&!has){col.style.display="none";}
+    else{col.style.display="";col.style.setProperty('--ci',String((++vis)+1));}
   });
+  aichart.style.setProperty('--ncols',String(vis));
   const total=document.querySelectorAll('#aichart .cert').length;
   aiCount.textContent=activeF?(shown+" / "+total+" match"):(total+" AI entries");
 }
