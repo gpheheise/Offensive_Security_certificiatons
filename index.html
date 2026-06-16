@@ -88,6 +88,9 @@
     grid-template-rows:auto repeat(4,auto);gap:8px 12px}
   /* left rail: spacer above headers + 4 level chips, sticky on horizontal scroll */
   .axis-spacer{grid-column:1;grid-row:1;position:sticky;left:0;z-index:7;background:var(--bg)}
+  /* solid bar behind the sticky column headers so scrolling cards never bleed through */
+  .head-backdrop{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:4;background:var(--bg);
+    box-shadow:0 -26px 0 var(--bg), 0 8px 0 var(--bg), 0 12px 15px rgba(0,0,0,.55)}
   .chart>.lvl{
     grid-column:1;position:sticky;left:0;z-index:7;min-height:62px;
     writing-mode:vertical-rl;transform:rotate(180deg);
@@ -293,7 +296,7 @@
   @media (max-width:860px){
     .scrollwrap{overflow-x:visible;padding:14px 12px}
     .chart{display:block;min-width:0}
-    .axis-spacer,.chart>.lvl{display:none}
+    .axis-spacer,.chart>.lvl,.head-backdrop{display:none}
     .col{display:block;margin-bottom:18px}
     .col-head{position:static}
     .band{flex-direction:row;flex-wrap:wrap}
@@ -465,6 +468,7 @@ const CERTS = [
   {code:"eCPPT", full:"Certified Professional Penetration Tester", prov:"INE Security", col:"general", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security/certifications/ecppt-certification"},
   {code:"HTB CPTS", full:"Certified Penetration Testing Specialist", prov:"Hack The Box", col:"general", lvl:2, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-penetration-testing-specialist"},
   {code:"PNPT", full:"Practical Network Penetration Tester", prov:"TCM Security", col:"general", lvl:2, price:"~$499", req:false, url:"https://certifications.tcm-sec.com/pnpt/"},
+  {code:"PORP", full:"Practical OSINT Research Professional", prov:"TCM Security", col:"general", lvl:2, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/porp/"},
   {code:"GPEN", full:"GIAC Penetration Tester (SEC560)", prov:"GIAC / SANS", col:"general", lvl:2, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/penetration-tester-gpen/"},
   {code:"CEH Practical", full:"Certified Ethical Hacker (Practical / Master)", prov:"EC-Council", col:"general", lvl:2, price:"~$550", req:false, url:"https://www.eccouncil.org/train-certify/ceh-practical/"},
   {code:"OSCP / OSCP+", full:"OffSec Certified Professional (PEN-200)", prov:"OffSec", col:"general", lvl:3, price:"Exam-only $799 · bundle check OffSec", req:true, url:"https://www.offsec.com/courses/pen-200/"},
@@ -527,7 +531,8 @@ const CERTS = [
   {code:"OSWE", full:"OffSec Web Expert (WEB-300)", prov:"OffSec", col:"web", lvl:3, price:"Course+exam · check OffSec", req:true, url:"https://www.offsec.com/courses/web-300/"},
   {code:"HTB CWEE", full:"Certified Web Exploitation Expert", prov:"Hack The Box", col:"web", lvl:3, price:"~$350", req:true, url:"https://academy.hackthebox.com/preview/certifications/htb-certified-web-exploitation-expert"},
   {code:"CAPenX", full:"Certified AppSec Pentester eXpert", prov:"The SecOps Group", col:"web", lvl:3, price:"~$ varies", req:false, url:"https://secops.group/"},
-  {code:"PWPP", full:"Practical Web Pentest Professional", prov:"TCM Security", col:"web", lvl:3, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/"},
+  {code:"PWPP", full:"Practical Web Pentest Professional", prov:"TCM Security", col:"web", lvl:3, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/pwpp/"},
+  {code:"PWPE", full:"Practical Web Pentest Expert", prov:"TCM Security", col:"web", lvl:4, price:"~$449", req:false, url:"https://certifications.tcm-sec.com/pwpe/"},
   {code:"CREST CCT APP", full:"CREST Certified Tester — Application (web)", prov:"CREST", col:"web", lvl:3, price:"~$ varies", req:false, url:"https://www.crest-approved.org/skills-certifications-careers/crest-certifications/"},
   {code:"8kSec OMRE", full:"Offensive Mobile Reversing & Exploitation", prov:"8kSec", col:"web", lvl:3, price:"~$ varies", req:true, url:"https://academy.8ksec.io/"},
 
@@ -563,6 +568,7 @@ const CERTS = [
   {code:"OSAI / OSAI+", full:"OffSec AI Red Teamer (AI-300)", prov:"OffSec", col:"ai", lvl:3, price:"Course+exam · check OffSec", req:true, url:"https://www.offsec.com/courses/ai-300/"},
   {code:"CAIPT-RT", full:"Certified AI Penetration Tester — Red Team", prov:"Tonex", col:"ai", lvl:3, price:"~$ varies", req:true, url:"https://www.tonex.com/training-courses/certified-ai-penetration-tester-red-team-caipt-rt/"},
   {code:"GASAE", full:"GIAC AI Security Automation Engineer", prov:"GIAC / SANS", col:"ai", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/"},
+  {code:"PAPA", full:"Practical AI Pentest Associate (agentic AI apps)", prov:"TCM Security", col:"ai", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/papa/"},
 
   /* ---------------- IoT · HARDWARE · OT/ICS ---------------- */
   {code:"PIPA", full:"Practical IoT Pentest Associate", prov:"TCM Security", col:"iot", lvl:1, price:"~$179", req:false, url:"https://certifications.tcm-sec.com/"},
@@ -587,6 +593,8 @@ const CERTS = [
   {code:"GSOC", full:"GIAC Security Operations Certified (SEC450)", prov:"GIAC / SANS", col:"def_soc", lvl:2, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/security-operations-certified-gsoc/"},
   {code:"BTL2", full:"Blue Team Level 2", prov:"Security Blue Team", col:"def_soc", lvl:2, price:"~$ varies", req:true, url:"https://www.securityblue.team/certifications"},
   {code:"GMON", full:"GIAC Continuous Monitoring (SEC511)", prov:"GIAC / SANS", col:"def_soc", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/continuous-monitoring-certification-gmon/"},
+  {code:"PSAA", full:"Practical SOC Analyst Associate", prov:"TCM Security", col:"def_soc", lvl:1, price:"~$249", req:false, url:"https://certifications.tcm-sec.com/psaa/"},
+  {code:"PSAP", full:"Practical SOC Analyst Professional", prov:"TCM Security", col:"def_soc", lvl:2, price:"~$399", req:false, url:"https://certifications.tcm-sec.com/psap/"},
   {code:"GCDA", full:"GIAC Certified Detection Analyst (SEC555)", prov:"GIAC / SANS", col:"def_soc", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/certified-detection-analyst-gcda/"},
   /* Incident Response & Forensics */
   {code:"GCIH", full:"GIAC Certified Incident Handler (SEC504)", prov:"GIAC / SANS", col:"def_dfir", lvl:2, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/certified-incident-handler-gcih/"},
@@ -601,7 +609,6 @@ const CERTS = [
   {code:"GCTI", full:"GIAC Cyber Threat Intelligence (FOR578)", prov:"GIAC / SANS", col:"def_intel", lvl:2, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/cyber-threat-intelligence-gcti/"},
   {code:"eCTHP", full:"Certified Threat Hunting Professional", prov:"INE Security", col:"def_intel", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/"},
   {code:"MAD ATT&CK", full:"MITRE ATT&CK Defender (CTI / SOC)", prov:"MITRE Engenuity", col:"def_intel", lvl:2, price:"~$ varies", req:true, url:"https://mad.mitre-engenuity.org/"},
-  {code:"GREM", full:"GIAC Reverse Engineering Malware (FOR610)", prov:"GIAC / SANS", col:"def_intel", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/reverse-engineering-malware-grem/"},
   {code:"GDAT", full:"GIAC Defending Advanced Threats (SEC599)", prov:"GIAC / SANS", col:"def_intel", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/defending-advanced-threats-gdat/"},
   {code:"Z2A", full:"Zero2Automated — Advanced Malware Analysis", prov:"Zero2Automated", col:"def_intel", lvl:3, price:"~$ varies", req:true, url:"https://courses.zero2auto.com/"},
 
@@ -676,7 +683,7 @@ const CERTS = [
 
 /* ---- version stamp ---- */
 const today=new Date();
-const verStr="Security & AI Cert Roadmap v3.1 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
+const verStr="Security & AI Cert Roadmap v3.3 · "+today.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" · "+CERTS.length+" certs · "+TRACKS.length+" tracks";
 document.getElementById('footver').textContent=verStr;
 
 /* ---- build provider filter (split "GIAC / SANS" etc. into individual options) ---- */
@@ -702,6 +709,7 @@ function render(){
   chart.style.setProperty('--ncols',cols.length);
   // left rail: spacer (above headers) + 4 level chips, as DIRECT grid children
   const sp=document.createElement('div');sp.className="axis-spacer";chart.appendChild(sp);
+  const bd=document.createElement('div');bd.className="head-backdrop";chart.appendChild(bd);
   LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;chart.appendChild(d);});
 
   cols.forEach((col,ci)=>{
@@ -1067,6 +1075,7 @@ const AI_CERTS = [
   {code:"HTB COAE", full:"HTB Certified Offensive AI Expert", prov:"Hack The Box", col:"ai_sec", lvl:3, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications"},
   {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai_sec", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
   {code:"COASP", full:"Certified Offensive AI Security Professional", prov:"EC-Council", col:"ai_sec", lvl:2, price:"~$ varies", req:true, url:"https://www.eccouncil.org/ai-courses/certified-offensive-ai-security-professional-coasp/"},
+  {code:"PAPA", full:"Practical AI Pentest Associate (agentic AI apps)", prov:"TCM Security", col:"ai_sec", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/papa/"},
   {code:"AIRTP+", full:"AI Red Teaming Professional", prov:"Learn Prompting", col:"ai_sec", lvl:2, price:"~$ varies", req:true, url:"https://learnprompting.org/certificates/ai-red-teaming-professional-certification"},
   {code:"CAIPT-RT", full:"Certified AI Penetration Tester – Red Team", prov:"Tonex", col:"ai_sec", lvl:3, price:"~$ varies", req:true, url:"https://www.tonex.com/training-courses/certified-ai-penetration-tester-red-team-caipt-rt/"},
   {code:"GASAE", full:"GIAC AI Security Automation Engineer", prov:"GIAC / SANS", col:"ai_sec", lvl:3, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/"},
@@ -1102,6 +1111,7 @@ function renderAI(){
   aichart.style.setProperty('--chart-min',Math.max(0,cols.length*168+44)+"px");
   aichart.style.setProperty('--ncols',cols.length);
   const sp=document.createElement('div');sp.className="axis-spacer";aichart.appendChild(sp);
+  const bd=document.createElement('div');bd.className="head-backdrop";aichart.appendChild(bd);
   LEVELS.forEach((l,i)=>{const d=document.createElement('div');d.className="lvl lv"+(i+1);d.textContent=l;aichart.appendChild(d);});
   cols.forEach((col,ci)=>{
     const c=document.createElement('div');c.className="col";c.style.setProperty('--ci',ci+2);
