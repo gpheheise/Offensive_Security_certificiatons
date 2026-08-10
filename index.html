@@ -519,7 +519,7 @@ const CERTS = [
   {code:"PWPA", full:"Practical Web Pentest Associate", prov:"TCM Security", col:"web", lvl:1, price:"~$299", req:false, url:"https://certifications.tcm-sec.com/pwpa/"},
   {code:"CAP", full:"Certified AppSec Practitioner", prov:"The SecOps Group", col:"web", lvl:1, price:"~$439", req:false, url:"https://secops.group/product/certified-application-security-practitioner/"},
   {code:"PMPA", full:"Practical Mobile Pentest Associate", prov:"TCM Security", col:"web", lvl:1, price:"~$249", req:false, url:"https://certifications.tcm-sec.com/"},
-  {code:"BSCP", full:"Burp Suite Certified Practitioner", prov:"PortSwigger", col:"web", lvl:2, price:"~$99 (free course)", req:false, url:"https://portswigger.net/web-security/certification"},
+  {code:"BSCP", full:"Burp Suite Certified Practitioner", prov:"PortSwigger", col:"web", lvl:2, price:"~$99 exam + Burp Pro", req:true, url:"https://portswigger.net/web-security/certification"},
   {code:"eWPT", full:"Web Application Penetration Tester", prov:"INE Security", col:"web", lvl:2, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
   {code:"OSWA", full:"OffSec Web Assessor (WEB-200)", prov:"OffSec", col:"web", lvl:2, price:"Course+exam · check OffSec", req:true, url:"https://www.offsec.com/courses/web-200/"},
   {code:"GWAPT", full:"GIAC Web App Penetration Tester (SEC542)", prov:"GIAC / SANS", col:"web", lvl:2, price:"Exam ~$979 · +SANS course", req:false, url:"https://www.giac.org/certifications/web-application-penetration-tester-gwapt/"},
@@ -561,6 +561,7 @@ const CERTS = [
 
   /* ---------------- AI / ML OFFENSIVE ---------------- */
   {code:"Offensive AI", full:"Generative AI for Pentesters (eJPT path module)", prov:"INE Security", col:"ai", lvl:1, price:"~$249 (sub)", req:true, url:"https://ine.com/security"},
+  {code:"eAIS", full:"AI Systems Security Specialist", prov:"INE Security", col:"ai", lvl:1, price:"INE sub + voucher", req:true, url:"https://ine.com/security/certifications/eais-certification"},
   {code:"HTB COAE", full:"Certified Offensive AI Expert (AI Red Teamer path, w/ Google)", prov:"Hack The Box", col:"ai", lvl:3, price:"~$210 (2 attempts)", req:true, url:"https://academy.hackthebox.com/preview/certifications"},
   {code:"AIRTP+", full:"AI Red Teaming Professional", prov:"Learn Prompting", col:"ai", lvl:2, price:"~$ varies", req:true, url:"https://learnprompting.org/certificates/ai-red-teaming-professional-certification"},
   {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
@@ -1071,6 +1072,7 @@ const AI_CERTS = [
   {code:"Prompt Eng (Vanderbilt)", full:"Prompt Engineering for ChatGPT", prov:"Vanderbilt / Coursera", col:"ai_gen", lvl:1, price:"certificate", req:true, url:"https://www.coursera.org/learn/prompt-engineering"},
 
   /* ---- AI Security & Red Teaming (mirrors the security roadmap's AI column) ---- */
+  {code:"eAIS", full:"AI Systems Security Specialist", prov:"INE Security", col:"ai_sec", lvl:1, price:"INE sub + voucher", req:true, url:"https://ine.com/security/certifications/eais-certification"},
   {code:"OSAI / OSAI+", full:"OffSec AI Red Teamer (AI-300)", prov:"OffSec", col:"ai_sec", lvl:3, price:"Course+exam · check OffSec", req:true, url:"https://www.offsec.com/courses/ai-300/"},
   {code:"HTB COAE", full:"HTB Certified Offensive AI Expert", prov:"Hack The Box", col:"ai_sec", lvl:3, price:"~$210", req:true, url:"https://academy.hackthebox.com/preview/certifications"},
   {code:"CAISP", full:"Certified AI Security Professional", prov:"Practical DevSecOps", col:"ai_sec", lvl:2, price:"~$949", req:true, url:"https://www.practical-devsecops.com/certified-ai-security-professional/"},
